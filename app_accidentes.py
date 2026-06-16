@@ -164,10 +164,12 @@ st.subheader("📈 Análisis Geográfico y Demográfico")
 g1, g2 = st.columns(2)
 
 with g1:
-    fig_mun = px.bar(df['Municipio'].value_counts().reset_index(), 
-                     x='index', y='Municipio', 
+    vc_mun = df['Municipio'].value_counts().reset_index()
+    vc_mun.columns = ['Municipio', 'N_Incidentes']
+    fig_mun = px.bar(vc_mun, 
+                     x='Municipio', y='N_Incidentes', 
                      title="Distribución de Siniestralidad por Municipio",
-                     labels={'index': 'Municipio', 'Municipio': 'N° Incidentes'},
+                     labels={'Municipio': 'Municipio', 'N_Incidentes': 'N° Incidentes'},
                      color_discrete_sequence=[azul])
     fig_mun.update_layout(paper_bgcolor=fondo, plot_bgcolor=fondo, font_color="white", title_font_color=azul)
     st.plotly_chart(fig_mun, use_container_width=True)
