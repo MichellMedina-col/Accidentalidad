@@ -233,7 +233,7 @@ hr {{ border-color: {BORDER} !important; }}
 
 # ─── UTILIDADES ───────────────────────────────────────────────
 def find_col(df, *keywords):
-    cols_lower = {{c.lower(): c for c in df.columns}}
+    cols_lower = {c.lower(): c for c in df.columns}
     for kw in keywords:
         kw_l = kw.lower()
         if kw_l in cols_lower:
