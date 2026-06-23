@@ -51,7 +51,56 @@ else:
     banner_bg = "#1E293B"
 
 # ─── ESTILOS CSS ──────────────────────────────────────────────
-# Estilo de modo claro y oscuro usando media queries (prefers-color-scheme)
+tema_actual = st.session_state.get('tema', 'Automático')
+
+if tema_actual == "Modo Claro":
+    theme_vars = """
+    :root {
+        --bg-color: #ffffff;
+        --sidebar-bg: #ffffff;
+        --sidebar-text: #002855;
+        --card-bg: #F4F4F0;
+        --card-border: #E2E8F0;
+        --text-color: #1E293B;
+        --title-color: #4A703C;
+    }
+    """
+elif tema_actual == "Modo Oscuro":
+    theme_vars = """
+    :root {
+        --bg-color: #0B132B;
+        --sidebar-bg: #1E293B;
+        --sidebar-text: #F8FAFC;
+        --card-bg: #1E293B;
+        --card-border: rgba(255, 255, 255, 0.08);
+        --text-color: #F8FAFC;
+        --title-color: #F8FAFC;
+    }
+    """
+else:
+    theme_vars = """
+    :root {
+        --bg-color: #ffffff;
+        --sidebar-bg: #ffffff;
+        --sidebar-text: #002855;
+        --card-bg: #F4F4F0;
+        --card-border: #E2E8F0;
+        --text-color: #1E293B;
+        --title-color: #4A703C;
+    }
+    @media (prefers-color-scheme: dark) {
+        :root {
+            --bg-color: #0B132B;
+            --sidebar-bg: #1E293B;
+            --sidebar-text: #F8FAFC;
+            --card-bg: #1E293B;
+            --card-border: rgba(255, 255, 255, 0.08);
+            --text-color: #F8FAFC;
+            --title-color: #F8FAFC;
+        }
+    }
+    """
+
 st.markdown(f"""
 <style>
     /* Ocultar elementos predeterminados de Streamlit */
@@ -60,33 +109,7 @@ st.markdown(f"""
     }}
 
     /* === VARIABLES DE TEMA === */
-    :root {{
-        /* MODO CLARO POR DEFECTO */
-        --bg-color: #ffffff;
-        --sidebar-bg: #ffffff;
-        --sidebar-text: #002855;
-        --card-bg: #F4F4F0;
-        --card-border: #E2E8F0;
-        --text-color: #1E293B;
-        --title-color: #4A703C; /* Verde Oliva */
-        --bubble-bg: #F4F4F0;
-        --bubble-text: #002855;
-    }}
-
-    @media (prefers-color-scheme: dark) {{
-        :root {{
-            /* MODO OSCURO */
-            --bg-color: #0B132B;
-            --sidebar-bg: #1E293B;
-            --sidebar-text: #F8FAFC;
-            --card-bg: #1E293B;
-            --card-border: rgba(255, 255, 255, 0.08);
-            --text-color: #F8FAFC;
-            --title-color: #F8FAFC;
-            --bubble-bg: #0B132B;
-            --bubble-text: #F8FAFC;
-        }}
-    }}
+    {theme_vars}
 
     /* Aplicar colores de fondo */
     .stApp {{
@@ -98,7 +121,11 @@ st.markdown(f"""
         border-right: 1px solid var(--card-border) !important;
     }}
 
-    /* Textos del sidebar */
+    /* Textos del sidebar: asegurando visibilidad en Modo Oscuro */
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] span,
+    [data-testid="stSidebar"] div[data-testid="stMarkdownContainer"] p,
     [data-testid="stSidebar"] .stSelectbox label,
     [data-testid="stSidebar"] .stSlider label,
     [data-testid="stSidebar"] .stRadio label {{
@@ -295,7 +322,11 @@ with st.sidebar:
     )
 
     # Espacio flexible y Burbuja inferior SENA
-    st.markdown('<div style="flex-grow: 1; height: 40vh;"></div>', unsafe_allow_html=True)
+    st.markdown('<div style="flex-grow: 1; height: 35vh;"></div>', unsafe_allow_html=True)
+    
+    # Selector de tema manual integrado estéticamente antes de los créditos
+    st.selectbox("🌓 Tema Visual", ["Automático", "Modo Claro", "Modo Oscuro"], key='tema')
+    
     st.markdown("""
     <div class="sena-bubble">
         <div style="font-size: 18px; margin-bottom: 5px;">📘</div>
@@ -443,15 +474,15 @@ if "Inicio" in pagina:
                     # === LOGICA DE SEMAFORO EXACTA ===
                     if riesgo_pct < 50:
                         color = "#10b981" # Verde - RIESGO BAJO
-                        label = "RIESGO BAJO"
+                        label = "🟢 RIESGO BAJO - CONTROLADO"
                         bg = "rgba(16, 185, 129, 0.1)"
                     elif riesgo_pct < 70:
                         color = "#F59E0B" # Amarillo Vial - RIESGO MEDIO
-                        label = "RIESGO MEDIO"
+                        label = "🟠 RIESGO MEDIO - PRECAUCIÓN"
                         bg = "rgba(245, 158, 11, 0.1)"
                     else:
                         color = "#EF4444" # Rojo Alerta - RIESGO ALTO
-                        label = "RIESGO ALTO - CRÍTICO"
+                        label = "🔴 RIESGO ALTO - CRÍTICO"
                         bg = "rgba(239, 68, 68, 0.1)"
         
                     # Render del resultado
