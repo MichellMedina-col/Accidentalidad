@@ -597,13 +597,13 @@ if "Inicio" in pagina:
                     st.markdown(f"""
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; width: 100%;">
                         <div style="position: relative; width: 220px; height: 200px; display: inline-block;">
-                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {{color}}80);">
+                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color}80);">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
-                                <circle cx="110" cy="100" r="80" stroke="{{color}}" stroke-width="14" fill="transparent" stroke-dasharray="{{335 * (riesgo_pct/100)}} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {{color}}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
+                                <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
-                            <div style="position: absolute; left: {{pin_x - 12}}px; top: {{pin_y - 24}}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {{color}}; transition: all 0.5s ease;">📍</div>
+                            <div style="position: absolute; left: {pin_x - 12}px; top: {pin_y - 24}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {color}; transition: all 0.5s ease;">📍</div>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
-                                <div style="font-size: 2.5rem; font-weight: 800; color: {{color}}; line-height: 1; text-shadow: 0px 0px 15px {{color}};">{{riesgo_pct}}%</div>
+                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
                             </div>
                         </div>
                         <div style="background: {bg}; box-shadow: {glow_shadow}; border: {glow_border}; border-radius: 10px; padding: 14px 24px; width: 100%; display: block; margin-top: 20px; text-align: center;">
