@@ -521,38 +521,55 @@ if "Inicio" in pagina:
                     conf = max(probs)
                     riesgo_pct = round(conf * 100, 1)
         
-                    # === LOGICA DE SEMAFORO EXACTA ===
+                    # === LOGICA DE SEMAFORO CON GLOW INLINE ===
+                    is_dark = tema_actual == "Modo Oscuro"
+                    
                     if riesgo_pct < 50:
-                        color = "#4ADE80" # Verde Neón
+                        color = "#4ADE80"
                         label = "🟢 RIESGO BAJO - CONTROLADO"
-                        bg = "rgba(74, 222, 128, 0.05)"
-                        glow_class = "glow-bajo"
+                        bg = "rgba(74, 222, 128, 0.08)"
+                        if is_dark:
+                            glow_shadow = "0px 0px 25px #4ADE80"
+                            glow_border = "2px solid #4ADE80"
+                        else:
+                            glow_shadow = "0px 4px 15px rgba(74, 222, 128, 0.3)"
+                            glow_border = "1px solid rgba(74, 222, 128, 0.4)"
                     elif riesgo_pct < 70:
-                        color = "#FBC02D" # Amarillo Neón
+                        color = "#FBC02D"
                         label = "🟠 RIESGO MEDIO - PRECAUCIÓN"
-                        bg = "rgba(251, 192, 45, 0.05)"
-                        glow_class = "glow-medio"
+                        bg = "rgba(251, 192, 45, 0.08)"
+                        if is_dark:
+                            glow_shadow = "0px 0px 25px #FBC02D"
+                            glow_border = "2px solid #FBC02D"
+                        else:
+                            glow_shadow = "0px 4px 15px rgba(251, 192, 45, 0.3)"
+                            glow_border = "1px solid rgba(251, 192, 45, 0.4)"
                     else:
-                        color = "#FF1744" # Rojo Neón
+                        color = "#FF1744"
                         label = "🔴 RIESGO ALTO - CRÍTICO"
-                        bg = "rgba(255, 23, 68, 0.05)"
-                        glow_class = "glow-alto"
+                        bg = "rgba(255, 23, 68, 0.08)"
+                        if is_dark:
+                            glow_shadow = "0px 0px 30px #FF1744"
+                            glow_border = "2px solid #FF1744"
+                        else:
+                            glow_shadow = "0px 4px 18px rgba(211, 47, 47, 0.35)"
+                            glow_border = "1px solid rgba(211, 47, 47, 0.45)"
         
-                    # Render del resultado
+                    # Render del resultado con estilos INLINE (sin depender de clases CSS)
                     st.markdown(f"""
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 250px; width: 100%;">
-                        <div style="position: relative; width: 180px; height: 180px; display: inline-block;">
-                            <svg width="180" height="180" viewBox="0 0 220 200" style="position: absolute; top:0; left:0;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; width: 100%;">
+                        <div style="position: relative; width: 200px; height: 200px; display: inline-block;">
+                            <svg width="200" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color}80);">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
-                                <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="12" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
+                                <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 50px;">
-                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; transition: color 0.5s ease; text-shadow: 0px 0px 10px {color}80;">{riesgo_pct}%</div>
+                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
                             </div>
                         </div>
-                        <div class="{glow_class}" style="background: {bg}; border-radius: 8px; padding: 12px 20px; width: 100%; display: block; margin-top: 20px; text-align: center; transition: all 0.5s ease;">
-                            <div style="font-size: 1.1rem; font-weight: 800; color: {color}; letter-spacing: 0.05em; text-shadow: 0px 0px 5px {color}40;">{label}</div>
-                            <div style="font-size: 0.8rem; color: var(--text-color); opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
+                        <div style="background: {bg}; box-shadow: {glow_shadow}; border: {glow_border}; border-radius: 10px; padding: 14px 24px; width: 100%; display: block; margin-top: 20px; text-align: center;">
+                            <div style="font-size: 1.15rem; font-weight: 800; color: {color}; letter-spacing: 0.05em; text-shadow: 0px 0px 8px {color}80;">{label}</div>
+                            <div style="font-size: 0.8rem; color: {'#F8FAFC' if is_dark else '#002855'}; opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
