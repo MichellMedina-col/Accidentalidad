@@ -62,7 +62,7 @@ tema_actual = st.session_state.get('tema', 'Automático')
 if tema_actual == "Modo Claro":
     theme_vars = """
     :root {
-        --bg-color: #FAFAFA;
+        --bg-color: #F4F4F0;
         --sidebar-bg: #ffffff;
         --sidebar-text: #002855;
         --card-bg: #ffffff;
@@ -100,7 +100,7 @@ elif tema_actual == "Modo Oscuro":
 else:
     theme_vars = """
     :root {
-        --bg-color: #FAFAFA;
+        --bg-color: #F4F4F0;
         --sidebar-bg: #ffffff;
         --sidebar-text: #002855;
         --card-bg: #ffffff;
@@ -170,11 +170,11 @@ st.markdown(f"""
     /* Corrección de Inputs para contraste claro/oscuro (Filtros) */
     div[data-baseweb="select"] > div {{
         background-color: var(--card-bg) !important;
-        color: var(--text-color) !important;
+        color: #002855 !important;
         border-color: var(--card-border) !important;
     }}
     div[data-baseweb="select"] > div span {{
-        color: var(--text-color) !important;
+        color: #002855 !important;
     }}
 
     /* Burbuja SENA inferior en Sidebar limpia y sutil */
@@ -199,8 +199,12 @@ st.markdown(f"""
         margin-bottom: 2rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         width: 100%;
-        margin-left: 0;
-        margin-right: 0;
+        margin: 0 !important;
+    }}
+    .block-container {{
+        padding-top: 1rem !important;
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
     }}
     .banner-title {{
         color: #ffffff !important;
@@ -221,15 +225,14 @@ st.markdown(f"""
     /* Cajas Independientes (Contenedores) - Glow Global Sincronizado */
     div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: var(--card-bg) !important;
-        border: {'2px' if tema_actual == 'Modo Oscuro' else '1px'} solid {risk_color}{'' if tema_actual == 'Modo Oscuro' else '60'} !important;
+        border: 1px solid var(--card-border) !important;
         border-radius: 12px !important;
-        box-shadow: 0px 0px {'20px' if tema_actual == 'Modo Oscuro' else '12px'} {risk_color}{'50' if tema_actual == 'Modo Oscuro' else '20'} !important;
+        box-shadow: var(--card-shadow) !important;
         padding: 1.5rem !important;
         transition: all 0.5s ease;
     }}
     div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
         transform: translateY(-2px);
-        box-shadow: 0px 0px {'30px' if tema_actual == 'Modo Oscuro' else '18px'} {risk_color}{'70' if tema_actual == 'Modo Oscuro' else '30'} !important;
     }}
 
     /* Títulos de los bloques */
@@ -360,7 +363,7 @@ with st.sidebar:
             </div>
             <div>
                 <div style="font-weight: 800; font-size: 18px; color: var(--text-color);">VialAnalytics</div>
-                <div style="font-size: 11px; color: #64748B; font-weight: 600;">SABANA OCCIDENTE - FACATATIVÁ, FUNZA, MADRID Y MOSQUERA</div>
+                <div style="font-size: 11px; color: #64748B; font-weight: 600;">SABANA OCCIDENTE - \nFACATATIVÁ, FUNZA, MADRID Y MOSQUERA</div>
             </div>
         </div>
     </div>
@@ -406,6 +409,8 @@ if "Inicio" in pagina:
     kpi_actor = df_full[COL_ACTOR].mode()[0] if COL_ACTOR else "N/D"
 
     with st.container(border=True):
+        clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
+        st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
         st.markdown('<div class="block-title">Resumen Estadístico Global</div>', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         
@@ -439,12 +444,14 @@ if "Inicio" in pagina:
     
     with p1:
         with st.container(border=True):
+            clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
+            st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
             edad = st.slider("Edad del actor vial", 0, 100, 30)
             
             def limpiar_opciones(col_name):
                 opciones = sorted(df_full[col_name].dropna().unique())
-                return [o for o in opciones if str(o).lower() not in ['sin informacion', 'sin información']]
+                return [o for o in opciones if str(o) != 'Sin información']
 
             mun_sel = st.selectbox("Municipio", limpiar_opciones(COL_MUN)) if COL_MUN else None
             zon_sel = st.selectbox("Zona del incidente", limpiar_opciones(COL_ZONA)) if COL_ZONA else None
@@ -453,6 +460,8 @@ if "Inicio" in pagina:
     
     with p2:
         with st.container(border=True):
+            clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
+            st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
             st.markdown('<div class="block-title">🔮 Predicción de Riesgo</div>', unsafe_allow_html=True)
             
             if modelo is not None:
@@ -570,6 +579,7 @@ if "Inicio" in pagina:
                                 <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 50px;">
+                                <div style="font-size: 1.5rem; margin-bottom: -5px;">📍</div>
                                 <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
                             </div>
                         </div>
@@ -584,18 +594,43 @@ if "Inicio" in pagina:
                     st.session_state.risk_color = color
 
                     # Inyectar CSS override para que TODOS los contenedores brillen con el color actual
-                    st.markdown(f"""
+                    if riesgo_pct < 50:
+                        color_neon = "#4ADE80"
+                    elif riesgo_pct < 70:
+                        color_neon = "#FBC02D"
+                    else:
+                        color_neon = "#FF1744"
+
+                    css_neon = f"""
                     <style>
-                    div[data-testid="stVerticalBlockBorderWrapper"] {{
-                        border: {'2px' if is_dark else '1px'} solid {color}{'FF' if is_dark else '60'} !important;
-                        box-shadow: 0px 0px {'20px' if is_dark else '12px'} {color}{'50' if is_dark else '20'} !important;
-                        transition: all 0.5s ease;
-                    }}
-                    div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
-                        box-shadow: 0px 0px {'30px' if is_dark else '18px'} {color}{'70' if is_dark else '30'} !important;
-                    }}
+                        /* Estilo para Modo Oscuro: Brillo Neón Intenso */
+                        .tarjeta-neon-oscuro {{
+                            border: 2px solid {{color_neon}} !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0px 0px 25px {{color_neon}} !important;
+                        }}
+                        
+                        /* Estilo para Modo Claro: Sombra Suave Difuminada */
+                        .tarjeta-neon-claro {{
+                            border: 1px solid {{color_neon}}33 !important; /* Color con transparencia */
+                            border-radius: 12px !important;
+                            box-shadow: 0px 4px 15px {{color_neon}}40 !important;
+                        }}
+                        
+                        /* Aplicar efecto solo a los contenedores Streamlit marcados */
+                        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tarjeta-neon-oscuro) {{
+                            border: 2px solid {{color_neon}} !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0px 0px 25px {{color_neon}} !important;
+                        }}
+                        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tarjeta-neon-claro) {{
+                            border: 1px solid {{color_neon}}33 !important;
+                            border-radius: 12px !important;
+                            box-shadow: 0px 4px 15px {{color_neon}}40 !important;
+                        }}
                     </style>
-                    """, unsafe_allow_html=True)
+                    """
+                    st.markdown(css_neon.replace("{{color_neon}}", color_neon), unsafe_allow_html=True)
         
                 except Exception as e:
                     st.error(f"Error en predicción: {e}")
