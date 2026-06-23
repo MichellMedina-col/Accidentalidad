@@ -434,6 +434,8 @@ if "Inicio" in pagina:
     with p1:
         with st.container(border=True):
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
+            edad = st.slider("Edad del actor vial", 0, 100, 30)
+            
             def limpiar_opciones(col_name):
                 opciones = sorted(df_full[col_name].dropna().unique())
                 return [o for o in opciones if str(o).lower() not in ['no reportado', 'sin informacion', 'sin información']]
