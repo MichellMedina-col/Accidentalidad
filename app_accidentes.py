@@ -106,27 +106,34 @@ st.markdown(f"""
         font-weight: 600 !important;
     }}
 
-    /* Burbuja SENA inferior en Sidebar */
-    .sena-bubble {{
-        background: var(--bubble-bg);
-        color: var(--bubble-text);
-        padding: 15px;
-        border-radius: 12px;
-        text-align: center;
-        font-size: 13px;
-        font-weight: 700;
-        margin-top: 20px;
-        border: 1px solid var(--card-border);
-        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+    /* Corrección de Inputs para contraste claro/oscuro (Filtros) */
+    div[data-baseweb="select"] > div {{
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+        border-color: var(--card-border) !important;
+    }}
+    div[data-baseweb="select"] > div span {{
+        color: var(--text-color) !important;
     }}
 
-    /* Banner Principal */
+    /* Burbuja SENA inferior en Sidebar limpia y sutil */
+    .sena-bubble {{
+        background: rgba(150, 150, 150, 0.1);
+        color: var(--sidebar-text);
+        padding: 15px;
+        border-radius: 16px;
+        text-align: center;
+        margin-top: 20px;
+        border: 1px solid rgba(150, 150, 150, 0.2);
+    }}
+
+    /* Banner Principal (Ajustes de padding y cover) */
     .banner-container {{
         background-image: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), {banner_bg};
         background-size: cover;
         background-position: center;
         border-radius: 16px;
-        padding: 4rem 2rem;
+        padding: 40px;
         text-align: center;
         margin-bottom: 2rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
@@ -222,9 +229,17 @@ def load_data():
             .str.replace(r'[úùü]', 'u', regex=True)
             .str.replace(r'[ñ]', 'n', regex=True)
         )
-        # Parse dates
-        if 'fecha_hecho' in df.columns:
-            df['fecha_hecho'] = pd.to_datetime(df['fecha_hecho'], errors='coerce')
+        # Identificar y parsear columna de fechas robustamente
+        col_fecha = None
+        for c in df.columns:
+            if 'fecha' in c:
+                col_fecha = c
+                break
+        if col_fecha:
+            df[col_fecha] = pd.to_datetime(df[col_fecha], errors='coerce')
+            # Renombrar obligatoriamente a fecha_hecho para evitar que las gráficas fallen
+            if col_fecha != 'fecha_hecho':
+                df.rename(columns={col_fecha: 'fecha_hecho'}, inplace=True)
         return df
     except Exception as e:
         st.error(f"⚠️ Error al cargar datos: {e}")
@@ -283,9 +298,9 @@ with st.sidebar:
     st.markdown('<div style="flex-grow: 1; height: 40vh;"></div>', unsafe_allow_html=True)
     st.markdown("""
     <div class="sena-bubble">
-        <span style="font-size: 20px;">📘</span><br>
-        Proyecto SENA 2026<br>
-        <span style="font-size: 10px; font-weight: 500; opacity: 0.8;">Análisis de Accidentalidad Vial</span>
+        <div style="font-size: 18px; margin-bottom: 5px;">📘</div>
+        <div style="font-size: 13px; font-weight: 700;">Proyecto SENA 2026</div>
+        <div style="font-size: 11px; opacity: 0.7;">Análisis de Accidentalidad Vial</div>
     </div>
     """, unsafe_allow_html=True)
 
@@ -298,7 +313,7 @@ if "Inicio" in pagina:
     st.markdown(f"""
     <div class="banner-container">
         <h1 class="banner-title">Análisis de la accidentalidad vial en los municipios de la Sabana de Occidente</h1>
-        <p class="banner-subtitle">🛣️ Conocer los riesgos hoy es salvar vidas mañana</p>
+        <p class="banner-subtitle">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -436,7 +451,7 @@ if "Inicio" in pagina:
                         bg = "rgba(245, 158, 11, 0.1)"
                     else:
                         color = "#EF4444" # Rojo Alerta - RIESGO ALTO
-                        label = "RIESGO ALTO"
+                        label = "RIESGO ALTO - CRÍTICO"
                         bg = "rgba(239, 68, 68, 0.1)"
         
                     # Render del resultado
