@@ -13,6 +13,7 @@ from plotly.subplots import make_subplots
 import base64
 import os
 import warnings
+import streamlit.components.v1 as components
 warnings.filterwarnings('ignore')
 
 # ─── CONFIGURACIÓN ────────────────────────────────────────────
@@ -594,14 +595,22 @@ if "Inicio" in pagina:
                     pin_x = 110 + 80 * math.cos(angle_rad)
                     pin_y = 100 + 80 * math.sin(angle_rad)
 
+                    # 1. Mantener la paleta de colores adaptativa en AZULES según el riesgo para el glow
+                    if riesgo_pct < 50:
+                        color_neon = "#00D2FF"  # Azul Celeste / Cyan brillante
+                    elif riesgo_pct < 70:
+                        color_neon = "#0078FF"  # Azul Eléctrico
+                    else:
+                        color_neon = "#7000FF"  # Azul Neón Profundo
+
                     st.markdown(f"""
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; width: 100%;">
                         <div style="position: relative; width: 220px; height: 200px; display: inline-block;">
-                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color}80);">
+                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color_neon}80);">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
-                                <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
+                                <circle cx="110" cy="100" r="80" stroke="{color_neon}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color_neon}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
-                            <div style="position: absolute; left: {pin_x - 12}px; top: {pin_y - 24}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {color}; transition: all 0.5s ease;">📍</div>
+                            <div style="position: absolute; left: {pin_x - 12}px; top: {pin_y - 24}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {color_neon}; transition: all 0.5s ease;">📍</div>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
                                 <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
                             </div>
@@ -616,44 +625,17 @@ if "Inicio" in pagina:
                     # Guardar color de riesgo en session_state para glow global
                     st.session_state.risk_color = color
 
-                    # Inyectar CSS override para que TODOS los contenedores brillen con el color actual
-                    if riesgo_pct < 50:
-                        color_neon = "#4ADE80"
-                    elif riesgo_pct < 70:
-                        color_neon = "#FBC02D"
-                    else:
-                        color_neon = "#FF1744"
-
-                    css_neon = f"""
-                    <style>
-                        /* Estilo para Modo Oscuro: Brillo Neón Intenso */
-                        .tarjeta-neon-oscuro {{
-                            border: 2px solid {{color_neon}} !important;
-                            border-radius: 12px !important;
-                            box-shadow: 0px 0px 25px {{color_neon}} !important;
-                        }}
+                    # 2. Inyectar JS override para el efecto neón azul sin romper el CSS de Streamlit
+                    try:
+                        with open("neon_script.html", "r", encoding="utf-8") as f:
+                            js_code = f.read()
                         
-                        /* Estilo para Modo Claro: Sombra Suave Difuminada */
-                        .tarjeta-neon-claro {{
-                            border: 1px solid {{color_neon}}33 !important; /* Color con transparencia */
-                            border-radius: 12px !important;
-                            box-shadow: 0px 4px 15px {{color_neon}}40 !important;
-                        }}
+                        js_code = js_code.replace("COLOR_PLACEHOLDER", color_neon)
+                        js_code = js_code.replace("THEME_PLACEHOLDER", "true" if is_dark else "false")
                         
-                        /* Aplicar efecto solo a los contenedores Streamlit marcados */
-                        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tarjeta-neon-oscuro) {{
-                            border: 2px solid {{color_neon}} !important;
-                            border-radius: 12px !important;
-                            box-shadow: 0px 0px 25px {{color_neon}} !important;
-                        }}
-                        div[data-testid="stVerticalBlockBorderWrapper"]:has(.tarjeta-neon-claro) {{
-                            border: 1px solid {{color_neon}}33 !important;
-                            border-radius: 12px !important;
-                            box-shadow: 0px 4px 15px {{color_neon}}40 !important;
-                        }}
-                    </style>
-                    """
-                    st.markdown(css_neon.replace("{{color_neon}}", color_neon), unsafe_allow_html=True)
+                        components.html(js_code, height=0, width=0)
+                    except Exception as e:
+                        pass
         
                 except Exception as e:
                     st.error(f"Error en predicción: {e}")

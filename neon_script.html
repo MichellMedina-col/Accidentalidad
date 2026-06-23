@@ -1,0 +1,65 @@
+<script>
+    // Este script se ejecuta dentro de un iframe de Streamlit.
+    // Para acceder a los elementos reales de la aplicación, debemos subir al DOM del padre (window.parent.document)
+    
+    function aplicarEstiloNeon(colorNeon, isDark) {
+        const parentDoc = window.parent.document;
+        
+        // 1. Buscar todas las tarjetas (contenedores con borde de Streamlit)
+        // Streamlit agrupa sus contenedores "border=True" en divs específicos.
+        const tarjetas = parentDoc.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
+        
+        tarjetas.forEach(tarjeta => {
+            // Verificamos si esta tarjeta tiene el indicador de "Modo Oscuro" o "Claro" que inyectamos vacíos
+            const esNeonOscuro = tarjeta.querySelector('.tarjeta-neon-oscuro') !== null;
+            const esNeonClaro = tarjeta.querySelector('.tarjeta-neon-claro') !== null;
+            
+            if (esNeonOscuro) {
+                // Aplicar estilos directos al wrapper del contenedor sin afectar la hoja de estilos global
+                tarjeta.style.border = `2px solid ${colorNeon}`;
+                tarjeta.style.boxShadow = `0px 0px 25px ${colorNeon}`;
+                tarjeta.style.backgroundColor = '#0E1117';
+                
+                // Forzar el texto blanco solo DENTRO de esta tarjeta específica
+                const textos = tarjeta.querySelectorAll('h1, h2, h3, p, label, div[data-baseweb="select"] div');
+                textos.forEach(t => {
+                    t.style.color = '#FFFFFF';
+                });
+                
+            } else if (esNeonClaro) {
+                // Modo Claro
+                tarjeta.style.border = `1px solid ${colorNeon}33`; // con transparencia
+                tarjeta.style.boxShadow = `0px 4px 15px ${colorNeon}40`;
+                tarjeta.style.backgroundColor = '#FFFFFF';
+                
+                // Forzar texto azul oscuro
+                const textos = tarjeta.querySelectorAll('h1, h2, h3, p, label, div[data-baseweb="select"] div');
+                textos.forEach(t => {
+                    t.style.color = '#002855';
+                });
+            }
+        });
+    }
+
+    // Escuchar mensajes desde Python/Streamlit o ejecutar con parámetros fijos pasados desde Python
+    // Al inyectar este HTML, podemos reemplazar valores directamente en Python antes de renderizar
+    const colorActivo = "COLOR_PLACEHOLDER"; // Esto será reemplazado desde Python
+    const isDarkTheme = "THEME_PLACEHOLDER" === "true";
+
+    // Ejecutar la aplicación de estilos con un pequeño retraso para asegurar que Streamlit ya pintó los divs
+    setTimeout(() => {
+        if (colorActivo !== "COLOR_PLACEHOLDER") {
+            aplicarEstiloNeon(colorActivo, isDarkTheme);
+        }
+    }, 500);
+
+    // Observador para cambios en el DOM (en caso de que Streamlit recargue la vista)
+    const observer = new MutationObserver(() => {
+        if (colorActivo !== "COLOR_PLACEHOLDER") {
+            aplicarEstiloNeon(colorActivo, isDarkTheme);
+        }
+    });
+
+    observer.observe(window.parent.document.body, { childList: true, subtree: true });
+
+</script>
