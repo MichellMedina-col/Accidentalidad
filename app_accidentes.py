@@ -5,6 +5,7 @@ import joblib
 import plotly.express as px
 import plotly.graph_objects as go
 import base64, os
+from datetime import datetime
 
 # ─── CONFIGURACIÓN ────────────────────────────────────────────
 st.set_page_config(
@@ -14,33 +15,82 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# ─── TOKENS DE DISEÑO ─────────────────────────────────────────
-BG_BASE  = "#0B1120"
-BG_CARD  = "#111827"
-BG_CARD2 = "#1a2236"
-BORDER   = "#1E2D45"
-ACCENT   = "#3B82F6"
-ACCENT2  = "#6366F1"
-SUCCESS  = "#10B981"
-WARNING  = "#F59E0B"
-DANGER   = "#EF4444"
-TEXT_PRI = "#F1F5F9"
-TEXT_SEC = "#94A3B8"
-TEXT_MUT = "#475569"
+# ─── DETECCIÓN DE TEMA ────────────────────────────────────────
+# Toggle manual de tema en session_state
+if "tema_oscuro" not in st.session_state:
+    st.session_state.tema_oscuro = False
+
+IS_DARK = st.session_state.tema_oscuro
+
+# ─── TOKENS DE DISEÑO (condicionales por tema) ────────────────
+if IS_DARK:
+    BG_BASE  = "#0B132B"
+    BG_CARD  = "#1E293B"
+    BG_CARD2 = "#0F172A"
+    BORDER   = "#2D3748"
+    ACCENT   = "#38BDF8"
+    ACCENT2  = "#60A5FA"
+    SUCCESS  = "#4ADE80"
+    WARNING  = "#F59E0B"
+    DANGER   = "#FF1744"
+    TEXT_PRI = "#F8FAFC"
+    TEXT_SEC = "#94A3B8"
+    TEXT_MUT = "#64748B"
+    CHART_BG = "#0F172A"
+else:
+    BG_BASE  = "#FFFFFF"
+    BG_CARD  = "#F4F4F0"
+    BG_CARD2 = "#E8E8E2"
+    BORDER   = "#D1D5DB"
+    ACCENT   = "#002855"
+    ACCENT2  = "#4A703C"
+    SUCCESS  = "#4A703C"
+    WARNING  = "#DD6B20"
+    DANGER   = "#E57373"
+    TEXT_PRI = "#212529"
+    TEXT_SEC = "#4A5568"
+    TEXT_MUT = "#718096"
+    CHART_BG = "#E8E8E2"
 
 # ─── CSS PREMIUM ──────────────────────────────────────────────
+# Lema: modo oscuro → gris claro/plata + itálica; modo claro → azul oscuro + normal
+LEMA_COLOR = "#94A3B8" if IS_DARK else "#002855"
+LEMA_STYLE = "italic" if IS_DARK else "normal"
+# Hero overlay: gradiente adaptado al tema
+HERO_OVERLAY = (
+    "linear-gradient(90deg, rgba(11,19,43,0.95) 0%, rgba(11,19,43,0.7) 60%, rgba(11,19,43,0.2) 100%)"
+    if IS_DARK else
+    "linear-gradient(90deg, rgba(255,255,255,0.95) 0%, rgba(255,255,255,0.7) 60%, rgba(255,255,255,0.2) 100%)"
+)
+HERO_TITLE_COLOR = "#F8FAFC" if IS_DARK else "#002855"
+HERO_BADGE_BG = "rgba(56,189,248,0.15)" if IS_DARK else "rgba(0,40,85,0.08)"
+HERO_BADGE_BORDER = "rgba(56,189,248,0.3)" if IS_DARK else "rgba(0,40,85,0.2)"
+SIDEBAR_BG = (
+    "linear-gradient(180deg, #0d1526 0%, #0B1120 100%)"
+    if IS_DARK else
+    "linear-gradient(180deg, #F4F4F0 0%, #E8E8E2 100%)"
+)
+TITLE_SEC_COLOR = "#4ADE80" if IS_DARK else "#4A703C"
+
 st.markdown(f"""
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after {{ box-sizing: border-box; }}
 html, body, .stApp, [data-testid="stAppViewContainer"] {{
     background-color: {BG_BASE} !important;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Inter', sans-serif !important;
     color: {TEXT_PRI};
 }}
 [data-testid="stSidebar"] {{
-    background: linear-gradient(180deg, #0d1526 0%, #0B1120 100%) !important;
+    background: {SIDEBAR_BG} !important;
     border-right: 1px solid {BORDER} !important;
+    display: flex !important;
+    flex-direction: column !important;
+}}
+[data-testid="stSidebar"] > div:first-child {{
+    display: flex !important;
+    flex-direction: column !important;
+    height: 100vh !important;
 }}
 [data-testid="stSidebar"] * {{ color: {TEXT_PRI} !important; }}
 [data-testid="stSidebarNav"] {{ display: none; }}
@@ -80,7 +130,7 @@ footer {{ display: none !important; }}
 }}
 .stButton > button:hover {{
     transform: translateY(-1px) !important;
-    box-shadow: 0 8px 20px rgba(59,130,246,0.35) !important;
+    box-shadow: 0 8px 20px {"rgba(56,189,248,0.35)" if IS_DARK else "rgba(0,40,85,0.25)"} !important;
 }}
 
 /* Expander */
@@ -104,7 +154,7 @@ hr {{ border-color: {BORDER} !important; }}
 }}
 .kpi-card:hover {{
     transform: translateY(-2px);
-    box-shadow: 0 12px 32px rgba(0,0,0,.4);
+    box-shadow: 0 12px 32px {"rgba(0,0,0,.25)" if IS_DARK else "rgba(0,0,0,.08)"};
 }}
 .kpi-card::before {{
     content: '';
@@ -123,13 +173,13 @@ hr {{ border-color: {BORDER} !important; }}
     margin-bottom: 8px;
 }}
 .kpi-value {{
-    font-size: 1.9rem;
+    font-size: 1.8rem;
     font-weight: 700;
     color: {TEXT_PRI};
     line-height: 1;
     margin-bottom: 4px;
 }}
-.kpi-sub {{ font-size: 12px; color: {TEXT_SEC}; }}
+.kpi-sub {{ font-size: 11px; color: {TEXT_SEC}; }}
 .kpi-icon {{
     position: absolute;
     top: 18px; right: 18px;
@@ -138,9 +188,9 @@ hr {{ border-color: {BORDER} !important; }}
 
 /* ── Section title ── */
 .sec-title {{
-    font-size: 1rem;
-    font-weight: 600;
-    color: {TEXT_PRI};
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: {TITLE_SEC_COLOR};
     margin-bottom: 2px;
 }}
 .sec-sub {{
@@ -156,22 +206,30 @@ hr {{ border-color: {BORDER} !important; }}
     position: relative;
     margin-bottom: 28px;
     border: 1px solid {BORDER};
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    min-height: 300px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}}
+.hero-banner.fallback {{
+    background: {SIDEBAR_BG};
 }}
 .hero-overlay {{
     position: absolute; inset: 0;
-    background: linear-gradient(90deg,
-        rgba(11,17,32,.95) 0%,
-        rgba(11,17,32,.7)  50%,
-        rgba(11,17,32,.2)  100%);
+    background: {HERO_OVERLAY};
     display: flex;
     flex-direction: column;
     justify-content: center;
     padding: 40px 48px;
+    transition: all 0.3s ease;
 }}
 .hero-badge {{
     display: inline-flex; align-items: center; gap: 8px;
-    background: rgba(59,130,246,.15);
-    border: 1px solid rgba(59,130,246,.3);
+    background: {HERO_BADGE_BG};
+    border: 1px solid {HERO_BADGE_BORDER};
     border-radius: 100px;
     padding: 6px 16px;
     font-size: 12px; font-weight: 600;
@@ -180,16 +238,18 @@ hr {{ border-color: {BORDER} !important; }}
     width: fit-content;
 }}
 .hero-title {{
-    font-size: 2.4rem;
+    font-size: 1.8rem;
     font-weight: 800;
-    color: {TEXT_PRI};
-    line-height: 1.15;
-    margin-bottom: 10px;
+    color: {HERO_TITLE_COLOR};
+    line-height: 1.25;
+    margin-bottom: 12px;
+    max-width: 85%;
 }}
-.hero-sub {{
-    font-size: 1rem;
-    color: {TEXT_SEC};
-    max-width: 500px;
+.hero-sub.lema {{
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: {LEMA_COLOR};
+    font-style: {LEMA_STYLE};
 }}
 
 /* ── Chart card ── */
@@ -215,9 +275,9 @@ hr {{ border-color: {BORDER} !important; }}
     margin-bottom: 4px;
 }}
 .nav-item.active {{
-    background: rgba(59,130,246,.15);
+    background: {"rgba(56,189,248,.15)" if IS_DARK else "rgba(0,40,85,.10)"};
     color: {ACCENT};
-    border: 1px solid rgba(59,130,246,.2);
+    border: 1px solid {"rgba(56,189,248,.2)" if IS_DARK else "rgba(0,40,85,.15)"};
 }}
 .divider-label {{
     font-size: 10px;
@@ -226,6 +286,273 @@ hr {{ border-color: {BORDER} !important; }}
     text-transform: uppercase;
     letter-spacing: .12em;
     padding: 14px 14px 6px;
+}}
+
+/* ── Result Card mejorada ── */
+.result-card {{
+    background: {BG_CARD};
+    border: 1px solid {BORDER};
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    min-height: 420px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s ease;
+}}
+.result-title {{
+    font-size: 12px;
+    font-weight: 600;
+    color: {TEXT_MUT};
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    margin-bottom: 20px;
+}}
+.circular-progress {{
+    position: relative;
+    width: 150px;
+    height: 150px;
+    margin-bottom: 16px;
+}}
+.progress-svg {{
+    transform: rotate(-90deg);
+    width: 100%;
+    height: 100%;
+}}
+.progress-svg circle {{
+    fill: none;
+    stroke-width: 8;
+}}
+.progress-svg circle.bg {{
+    stroke: {BORDER};
+    opacity: 0.3;
+}}
+.progress-svg circle.meter {{
+    stroke: currentColor;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.8s ease-in-out;
+}}
+.circular-progress.riesgo-bajo {{
+    color: {SUCCESS};
+}}
+.circular-progress.riesgo-medio {{
+    color: {WARNING};
+}}
+.circular-progress.riesgo-alto {{
+    color: {DANGER};
+}}
+.circular-progress .value {{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: {TEXT_PRI};
+}}
+.result-badge {{
+    background: {BG_CARD2};
+    border-radius: 100px;
+    padding: 6px 20px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin: 12px 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 1px solid transparent;
+}}
+.result-badge.riesgo-bajo {{
+    color: {SUCCESS};
+    border-color: {SUCCESS};
+    background: {"rgba(74,222,128,0.08)" if IS_DARK else "rgba(74,112,60,0.08)"};
+}}
+.result-badge.riesgo-medio {{
+    color: {WARNING};
+    border-color: {WARNING};
+    background: {"rgba(245,158,11,0.08)" if IS_DARK else "rgba(221,107,32,0.08)"};
+}}
+.result-badge.riesgo-alto {{
+    color: {DANGER};
+    border-color: {DANGER};
+    background: {"rgba(255,23,68,0.08)" if IS_DARK else "rgba(229,115,115,0.08)"};
+}}
+.result-details {{
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    flex-wrap: wrap;
+    width: 100%;
+}}
+.detail-item {{
+    background: {BG_CARD2};
+    border-radius: 8px;
+    padding: 8px 14px;
+    flex: 1;
+    min-width: 80px;
+    border: 1px solid {BORDER};
+}}
+.detail-label {{
+    font-size: 9px;
+    color: {TEXT_MUT};
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 2px;
+    letter-spacing: 0.05em;
+}}
+.detail-val {{
+    font-size: 13px;
+    font-weight: 600;
+    color: {TEXT_PRI};
+}}
+
+/* ── Sidebar Estilos Adicionales ── */
+/* Ocultar el label del radio */
+[data-testid="stSidebar"] .stRadio > label {{
+    display: none !important;
+}}
+/* Estilo de los radio buttons como nav items */
+[data-testid="stSidebar"] .stRadio > div {{
+    gap: 4px !important;
+}}
+[data-testid="stSidebar"] .stRadio > div > label {{
+    background: transparent !important;
+    border: 1px solid transparent !important;
+    border-radius: 10px !important;
+    padding: 10px 14px !important;
+    margin: 0 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    color: {TEXT_SEC} !important;
+    cursor: pointer !important;
+    transition: all 0.2s ease !important;
+}}
+[data-testid="stSidebar"] .stRadio > div > label:hover {{
+    background: {"rgba(56,189,248,.08)" if IS_DARK else "rgba(0,40,85,.06)"} !important;
+    color: {TEXT_PRI} !important;
+}}
+[data-testid="stSidebar"] .stRadio > div > label[data-checked="true"],
+[data-testid="stSidebar"] .stRadio > div > label:has(input:checked) {{
+    background: {"rgba(56,189,248,.15)" if IS_DARK else "rgba(0,40,85,.10)"} !important;
+    color: {ACCENT} !important;
+    border: 1px solid {BORDER} !important;
+}}
+/* Ocultar el circulito del radio */
+[data-testid="stSidebar"] .stRadio > div > label > div:first-child {{
+    display: none !important;
+}}
+/* Footer del sidebar */
+.sidebar-footer {{
+    margin-top: auto !important;
+    padding: 20px 14px 24px !important;
+}}
+.sidebar-footer-box {{
+    border: 1px solid {BORDER};
+    border-radius: 12px;
+    padding: 14px 18px;
+    text-align: center;
+}}
+.sidebar-footer-label {{
+    font-size: 10px;
+    font-weight: 600;
+    color: {TEXT_MUT};
+    text-transform: uppercase;
+    letter-spacing: .1em;
+}}
+.sidebar-footer-year {{
+    font-size: 18px;
+    font-weight: 700;
+    color: {ACCENT};
+    margin-top: 2px;
+}}
+
+/* ── Toggle de tema ── */
+.theme-toggle-container {{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    margin-bottom: 8px;
+}}
+.theme-toggle-label {{
+    font-size: 12px;
+    font-weight: 500;
+    color: {TEXT_SEC};
+}}
+
+/* ── Estilos responsivos ── */
+@media (max-width: 768px) {{
+    .hero-banner {{
+        min-height: 220px !important;
+        margin-bottom: 20px !important;
+    }}
+    .hero-overlay {{
+        padding: 24px 28px !important;
+    }}
+    .hero-title {{
+        font-size: 1.3rem !important;
+        max-width: 100% !important;
+    }}
+    .hero-sub.lema {{
+        font-size: 0.9rem !important;
+    }}
+    .kpi-card {{
+        height: auto !important;
+        padding: 16px 20px !important;
+    }}
+    .kpi-value {{
+        font-size: 1.5rem !important;
+    }}
+    .result-card {{
+        min-height: auto !important;
+        padding: 16px !important;
+    }}
+    .circular-progress {{
+        width: 120px !important;
+        height: 120px !important;
+    }}
+    .circular-progress .value {{
+        font-size: 1.8rem !important;
+    }}
+    .sec-title {{
+        font-size: 1rem !important;
+    }}
+    .detail-item {{
+        min-width: 60px !important;
+        padding: 6px 10px !important;
+    }}
+    .detail-val {{
+        font-size: 11px !important;
+    }}
+}}
+
+/* ── Tablet breakpoint ── */
+@media (min-width: 769px) and (max-width: 1024px) {{
+    .hero-title {{
+        font-size: 1.5rem !important;
+    }}
+    .kpi-card {{
+        padding: 18px 20px !important;
+        height: auto !important;
+    }}
+    .kpi-value {{
+        font-size: 1.6rem !important;
+    }}
+}}
+
+/* ── Footer global ── */
+.app-footer {{
+    border-top: 1px solid {BORDER};
+    padding: 18px 0;
+    text-align: center;
+}}
+.app-footer span {{
+    color: {TEXT_MUT};
+    font-size: 12px;
 }}
 </style>
 """, unsafe_allow_html=True)
@@ -247,16 +574,17 @@ def img_to_b64(path):
     with open(path, "rb") as f:
         return base64.b64encode(f.read()).decode()
 
-def dark_layout(fig, title_color=ACCENT):
+def dark_layout(fig, title_color=None):
+    grid_color = "rgba(128, 128, 128, 0.18)"
+    text_color = "rgba(128, 128, 128, 0.8)"
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter", color=TEXT_SEC),
-        title_font=dict(color=title_color, size=14, family="Inter"),
-        margin=dict(l=10, r=10, t=40, b=10),
-        legend=dict(bgcolor="rgba(0,0,0,0)", bordercolor=BORDER, font=dict(color=TEXT_SEC)),
-        xaxis=dict(gridcolor=BORDER, linecolor=BORDER, tickfont=dict(color=TEXT_MUT)),
-        yaxis=dict(gridcolor=BORDER, linecolor=BORDER, tickfont=dict(color=TEXT_MUT)),
+        font=dict(family="Inter", color=text_color, size=11),
+        margin=dict(l=10, r=10, t=20, b=10),
+        legend=dict(bgcolor="rgba(0,0,0,0)", font=dict(color=text_color)),
+        xaxis=dict(gridcolor=grid_color, linecolor=grid_color, tickfont=dict(color=text_color)),
+        yaxis=dict(gridcolor=grid_color, linecolor=grid_color, tickfont=dict(color=text_color)),
     )
     return fig
 
@@ -306,11 +634,13 @@ COL_FECHA  = find_col(df_full, 'fecha', 'date', 'año', 'anio', 'year', 'mes')
 
 
 # ═══════════════════════════════════════════════════════════════
-#  SIDEBAR — navegación
+#  SIDEBAR — navegación (estilo panel de control limpio)
 # ═══════════════════════════════════════════════════════════════
+
 with st.sidebar:
+    # ── Logo + Título ──
     st.markdown(f"""
-    <div style="padding:20px 14px 20px;">
+    <div style="padding:20px 14px 16px;">
         <div style="display:flex; align-items:center; gap:10px; margin-bottom:6px;">
             <div style="width:38px;height:38px;border-radius:10px;
                         background:linear-gradient(135deg,{ACCENT},{ACCENT2});
@@ -325,56 +655,41 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+    # ── Navegación (radio buttons estilizados) ──
     pagina = st.radio(
         "Navegación",
         ["🏠  Inicio · Predictor", "📊  Análisis Visual"],
         label_visibility="collapsed"
     )
 
-    st.markdown(f'<div class="divider-label">Filtros</div>', unsafe_allow_html=True)
+    # ── Toggle de tema (Modo Claro / Modo Oscuro) ──
+    st.markdown("---")
+    tema_label = "🌙 Modo Oscuro" if not IS_DARK else "☀️ Modo Claro"
+    if st.button(tema_label, key="theme_toggle", use_container_width=True):
+        st.session_state.tema_oscuro = not st.session_state.tema_oscuro
+        st.rerun()
 
-    # Filtro municipio
-    df = df_full.copy()
-    if COL_MUN:
-        opts_mun = ["Todos"] + sorted(df[COL_MUN].dropna().unique().tolist())
-        sel_mun  = st.selectbox("Municipio", opts_mun)
-        if sel_mun != "Todos":
-            df = df[df[COL_MUN] == sel_mun]
-
-    # Filtro género
-    if COL_GENERO:
-        opts_gen = ["Todos"] + sorted(df[COL_GENERO].dropna().unique().tolist())
-        sel_gen  = st.selectbox("Género", opts_gen)
-        if sel_gen != "Todos":
-            df = df[df[COL_GENERO] == sel_gen]
-
-    st.markdown("<br>", unsafe_allow_html=True)
+    # ── Footer: PROYECTO SENA 2026 ──
     st.markdown(f"""
-    <div style="background:{BG_CARD2};border:1px solid {BORDER};
-                border-radius:12px;padding:14px;margin:0 4px;">
-        <div style="font-size:10px;color:{TEXT_MUT};text-transform:uppercase;
-                    letter-spacing:.08em;margin-bottom:4px;">Registros filtrados</div>
-        <div style="font-size:22px;font-weight:700;color:{ACCENT};">{len(df):,}</div>
-        <div style="font-size:11px;color:{TEXT_MUT};">de {len(df_full):,} totales</div>
+    <div class="sidebar-footer">
+        <div class="sidebar-footer-box">
+            <div class="sidebar-footer-label">Proyecto SENA</div>
+            <div class="sidebar-footer-year">2026</div>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    # Diagnóstico opcional
-    cols_faltantes = {{k: v for k, v in {
-        'Edad': COL_EDAD, 'Municipio': COL_MUN, 'Zona': COL_ZONA,
-        'Género': COL_GENERO, 'Actor Vial': COL_ACTOR
-    }.items() if v is None}}
-    if cols_faltantes:
-        with st.expander("⚠️ Diagnóstico"):
-            st.warning(f"No detectadas: {', '.join(cols_faltantes.keys())}")
-            st.code(str(list(df_full.columns)))
+# ── Filtros ahora en el área principal (ocultos en variables) ──
+df = df_full.copy()
+sel_mun = "Todos"
+sel_gen = "Todos"
 
 
 # ═══════════════════════════════════════════════════════════════
 #  CALCULAR KPIs dinámicos
 # ═══════════════════════════════════════════════════════════════
 kpi_incidentes = f"{len(df):,}"
-kpi_edad  = f"{df[COL_EDAD].mean():.1f} años"  if COL_EDAD   else "N/D"
+kpi_edad  = f"{df[COL_EDAD].mean():.1f}"  if COL_EDAD   else "N/D"
 kpi_mun   = df[COL_MUN].mode()[0]               if COL_MUN    else "N/D"
 kpi_actor = df[COL_ACTOR].mode()[0]             if COL_ACTOR  else "N/D"
 
@@ -389,30 +704,21 @@ if "Inicio" in pagina:
     if os.path.exists(img_path):
         b64 = img_to_b64(img_path)
         st.markdown(f"""
-        <div class="hero-banner">
-            <img src="data:image/jpeg;base64,{b64}"
-                 style="width:100%; height:340px; object-fit:cover; object-position:center; display:block;">
+        <div class="hero-banner" style="background-image: url('data:image/jpeg;base64,{b64}');">
             <div class="hero-overlay">
                 <div class="hero-badge">🚦 Proyecto SENA · 2026</div>
-                <div class="hero-title">Seguridad Vial<br>Sabana Occidente</div>
-                <div class="hero-sub">
-                    Análisis de accidentalidad &nbsp;·&nbsp;
-                    Facatativá &nbsp;•&nbsp; Funza &nbsp;•&nbsp; Madrid &nbsp;•&nbsp; Mosquera
-                </div>
+                <div class="hero-title">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</div>
+                <div class="hero-sub lema">🛣️ "Conocer los riesgos hoy para prevenir los accidentes de mañana."</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
     else:
         st.markdown(f"""
-        <div style="background:linear-gradient(135deg,{BG_CARD},{BG_CARD2});
-                    border:1px solid {BORDER}; border-radius:20px;
-                    padding:48px; margin-bottom:28px; text-align:center;">
-            <div style="font-size:3rem; margin-bottom:12px;">🚦</div>
-            <div style="font-size:2rem; font-weight:800; color:{TEXT_PRI};">
-                Seguridad Vial · Sabana Occidente
-            </div>
-            <div style="color:{TEXT_SEC}; margin-top:8px;">
-                Análisis de accidentalidad · Facatativá • Funza • Madrid • Mosquera
+        <div class="hero-banner fallback">
+            <div class="hero-overlay">
+                <div class="hero-badge">🚦 Proyecto SENA · 2026</div>
+                <div class="hero-title">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</div>
+                <div class="hero-sub lema">🛣️ "Conocer los riesgos hoy para prevenir los accidentes de mañana."</div>
             </div>
         </div>
         """, unsafe_allow_html=True)
@@ -423,16 +729,16 @@ if "Inicio" in pagina:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-icon">🚨</div>
-            <div class="kpi-label">Incidentes registrados</div>
+            <div class="kpi-label">Incidentes filtrados</div>
             <div class="kpi-value">{kpi_incidentes}</div>
-            <div class="kpi-sub" style="color:{SUCCESS};">● Dataset activo</div>
+            <div class="kpi-sub">Todos los municipios · Todos los géneros</div>
         </div>""", unsafe_allow_html=True)
     with k2:
         st.markdown(f"""
         <div class="kpi-card">
             <div class="kpi-icon">🎂</div>
             <div class="kpi-label">Edad media crítica</div>
-            <div class="kpi-value">{kpi_edad}</div>
+            <div class="kpi-value">{kpi_edad} años</div>
             <div class="kpi-sub">Promedio de involucrados</div>
         </div>""", unsafe_allow_html=True)
     with k3:
@@ -459,7 +765,7 @@ if "Inicio" in pagina:
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
         <div style="width:4px;height:28px;background:linear-gradient(180deg,{ACCENT},{ACCENT2});border-radius:2px;"></div>
         <div>
-            <div style="font-size:1.1rem;font-weight:700;color:{TEXT_PRI};">Predictor de Escenario de Riesgo</div>
+            <div style="font-size:1.1rem;font-weight:700;color:{TITLE_SEC_COLOR};">Predictor de Escenario de Riesgo</div>
             <div style="font-size:.82rem;color:{TEXT_SEC};">Configura los parámetros del actor vial para obtener una predicción de riesgo</div>
         </div>
     </div>
@@ -486,15 +792,6 @@ if "Inicio" in pagina:
         st.markdown("</div>", unsafe_allow_html=True)
 
     with p2:
-        st.markdown(f"""
-        <div style="background:{BG_CARD};border:1px solid {BORDER};
-                    border-radius:16px;padding:24px;min-height:420px;">
-            <div style="font-size:12px;font-weight:600;color:{TEXT_MUT};
-                        text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">
-                🔮 Resultado del análisis
-            </div>
-        """, unsafe_allow_html=True)
-
         if modelo is not None:
             try:
                 cols_mod = list(modelo.feature_names_in_)
@@ -515,45 +812,59 @@ if "Inicio" in pagina:
                 pred      = modelo.predict(inp)[0]
                 probs     = modelo.predict_proba(inp)[0]
                 conf      = max(probs)
-                is_danger = pred != 0
-                col_res   = DANGER  if is_danger else SUCCESS
-                icon_res  = "🔴"    if is_danger else "🟢"
-                label_res = "RIESGO ALTO · CRÍTICO" if is_danger else "RIESGO BAJO · CONTROLADO"
-                bg_res    = "rgba(239,68,68,.08)"   if is_danger else "rgba(16,185,129,.08)"
+                
+                # Determinar nivel de riesgo (0-100)
+                riesgo_pct = round(conf * 100, 1)
+                
+                # Determinar color, etiqueta y clase según el nivel
+                if riesgo_pct < 50:
+                    clase_riesgo = "riesgo-bajo"
+                    label_riesgo = "RIESGO BAJO - CONTROLADO"
+                    icon_riesgo = "🟢"
+                elif riesgo_pct < 70:
+                    clase_riesgo = "riesgo-medio"
+                    label_riesgo = "RIESGO MEDIO - PRECAUCIÓN"
+                    icon_riesgo = "🟡"
+                else:
+                    clase_riesgo = "riesgo-alto"
+                    label_riesgo = "RIESGO ALTO - CRÍTICO"
+                    icon_riesgo = "🔴"
 
-                # Gauge
-                fig_g = go.Figure(go.Indicator(
-                    mode="gauge+number",
-                    value=round(conf * 100, 1),
-                    number=dict(suffix="%", font=dict(size=30, color=TEXT_PRI, family="Inter")),
-                    gauge=dict(
-                        axis=dict(range=[0,100], tickcolor=TEXT_MUT, tickfont=dict(color=TEXT_MUT)),
-                        bar=dict(color=col_res, thickness=0.25),
-                        bgcolor="rgba(0,0,0,0)", bordercolor=BORDER,
-                        steps=[
-                            dict(range=[0,50],  color="rgba(16,185,129,.07)"),
-                            dict(range=[50,75], color="rgba(245,158,11,.07)"),
-                            dict(range=[75,100],color="rgba(239,68,68,.07)")
-                        ],
-                        threshold=dict(line=dict(color=col_res, width=3), value=conf*100)
-                    )
-                ))
-                fig_g.update_layout(
-                    paper_bgcolor="rgba(0,0,0,0)",
-                    font=dict(family="Inter", color=TEXT_SEC),
-                    height=210, margin=dict(l=20,r=20,t=20,b=0)
-                )
-                st.plotly_chart(fig_g, use_container_width=True, config={'displayModeBar': False})
+                dash_offset = round(251.2 - (251.2 * riesgo_pct / 100), 2)
 
+                # Mostrar resultado estilo donas circular SVG
                 st.markdown(f"""
-                <div style="background:{bg_res};border:1px solid {col_res}40;
-                            border-radius:14px;padding:22px;text-align:center;margin-top:8px;">
-                    <div style="font-size:26px;margin-bottom:8px;">{icon_res}</div>
-                    <div style="font-size:1rem;font-weight:700;color:{col_res};
-                                letter-spacing:.04em;">{label_res}</div>
-                    <div style="font-size:12px;color:{TEXT_MUT};margin-top:6px;">
-                        Confianza estadística:
-                        <b style="color:{TEXT_SEC};">{conf:.1%}</b>
+                <div class="result-card">
+                    <div class="result-title">🔮 Resultado del análisis</div>
+                    <div class="circular-progress {clase_riesgo}">
+                        <svg viewBox="0 0 100 100" class="progress-svg">
+                            <circle class="bg" cx="50" cy="50" r="40"></circle>
+                            <circle class="meter" cx="50" cy="50" r="40" style="stroke-dasharray: 251.2; stroke-dashoffset: {dash_offset};"></circle>
+                        </svg>
+                        <div class="value">{riesgo_pct}%</div>
+                    </div>
+                    <div style="font-size:0.9rem;font-weight:600;color:var(--text-sec);margin-top:4px;">
+                        Índice de riesgo estimado
+                    </div>
+                    <div class="result-badge {clase_riesgo}">
+                        {icon_riesgo} {label_riesgo}
+                    </div>
+                    <div class="result-details">
+                        <div class="detail-item">
+                            <span class="detail-label">Actor Vial</span>
+                            <span class="detail-val">{act_sel if act_sel else 'N/D'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Municipio</span>
+                            <span class="detail-val">{mun_sel if mun_sel else 'N/D'}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-label">Confianza</span>
+                            <span class="detail-val">{conf:.1%}</span>
+                        </div>
+                    </div>
+                    <div style="margin-top:16px;font-size:11px;color:{TEXT_MUT};">
+                        Proyecto SENA · 2026
                     </div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -562,16 +873,21 @@ if "Inicio" in pagina:
                 st.error(f"Error en predicción: {e}")
         else:
             st.markdown(f"""
-            <div style="text-align:center;padding:48px 20px;">
-                <div style="font-size:40px;margin-bottom:12px;">📦</div>
-                <div style="color:{TEXT_SEC};font-size:14px;">
-                    Modelo no disponible.<br>
-                    Sube <code>modelo_accidentes.pkl</code> al repositorio.
+            <div style="background:{BG_CARD};border:1px solid {BORDER};
+                        border-radius:16px;padding:24px;min-height:420px;text-align:center;">
+                <div style="font-size:12px;font-weight:600;color:{TEXT_MUT};
+                            text-transform:uppercase;letter-spacing:.08em;margin-bottom:16px;">
+                    🔮 Resultado del análisis
+                </div>
+                <div style="padding:48px 20px;">
+                    <div style="font-size:40px;margin-bottom:12px;">📦</div>
+                    <div style="color:{TEXT_SEC};font-size:14px;">
+                        Modelo no disponible.<br>
+                        Sube <code>modelo_accidentes.pkl</code> al repositorio.
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
-
-        st.markdown("</div>", unsafe_allow_html=True)
 
 
 # ════════════════════════════════════════════════════════════════
@@ -582,7 +898,7 @@ else:
     # Encabezado de sección
     st.markdown(f"""
     <div style="padding:8px 0 24px;">
-        <h1 style="font-size:1.7rem;font-weight:700;color:{TEXT_PRI};margin:0 0 4px;">
+        <h1 style="font-size:1.7rem;font-weight:700;color:{ACCENT};margin:0 0 4px;">
             📊 Análisis de Accidentalidad
         </h1>
         <p style="color:{TEXT_SEC};font-size:.9rem;margin:0;">
@@ -603,7 +919,7 @@ else:
     with k2:
         st.markdown(f"""<div class="kpi-card"><div class="kpi-icon">🎂</div>
             <div class="kpi-label">Edad media</div>
-            <div class="kpi-value">{kpi_edad}</div>
+            <div class="kpi-value">{kpi_edad} años</div>
             <div class="kpi-sub">Promedio involucrados</div>
         </div>""", unsafe_allow_html=True)
     with k3:
@@ -636,7 +952,7 @@ else:
                 x=vc['Municipio'], y=vc['Incidentes'],
                 marker=dict(
                     color=vc['Incidentes'],
-                    colorscale=[[0,"#1E3A5F"],[.5,ACCENT],[1,ACCENT2]],
+                    colorscale=[[0,CHART_BG],[.5,ACCENT],[1,ACCENT2]],
                     line=dict(width=0)
                 ),
                 hovertemplate="<b>%{x}</b><br>Incidentes: %{y:,}<extra></extra>"
@@ -685,7 +1001,7 @@ else:
                 orientation='h',
                 marker=dict(
                     color=vc_a['Cantidad'],
-                    colorscale=[[0,"#1a2236"],[1,SUCCESS]],
+                    colorscale=[[0,CHART_BG],[1,SUCCESS]],
                     line=dict(width=0)
                 ),
                 hovertemplate="<b>%{y}</b>: %{x:,} casos<extra></extra>"
@@ -787,8 +1103,8 @@ else:
 # ─── FOOTER ───────────────────────────────────────────────────
 st.markdown(f"""
 <br>
-<div style="border-top:1px solid {BORDER};padding:18px 0;text-align:center;">
-    <span style="color:{TEXT_MUT};font-size:12px;">
+<div class="app-footer">
+    <span>
         🚦 &nbsp; VialAnalytics · Seguridad Vial Sabana Occidente &nbsp;·&nbsp;
         Proyecto SENA 2026
     </span>

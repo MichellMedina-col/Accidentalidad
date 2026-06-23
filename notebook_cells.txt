@@ -1,0 +1,1702 @@
+=== Cell 0 (markdown) ===
+<div style="
+background:#0F172A;
+padding:50px;
+border-radius:35px;
+border:2px solid #334155;
+/* box-shadow:0px 10px 30px rgba(0,0,0,0.3); <- Esta línea fue eliminada */
+text-align:center;">
+
+<h1 style="
+color:#38BDF8;
+font-size:55px;
+margin-bottom:10px;">
+🚗 Accidentes de Tránsito
+</h1>
+
+<p style="
+color:#CBD5E1;
+font-size:22px;
+margin:0 auto 20px auto;
+text-align:center;">
+Análisis de la Accidentalidad Vial en Sabana Occidente
+</p>
+
+<hr style="
+border:1px solid #334155;
+width:70%;
+margin:25px auto;">
+
+<div style="
+display:inline-block;
+padding:10px 20px;
+background:#1E293B;
+border-radius:15px;
+margin-bottom:20px;
+color:#E2E8F0;
+font-size:18px;">
+📍 Facatativá • Funza • Madrid • Mosquera
+</div>
+
+<br>
+
+<div style="
+display:inline-block;
+padding:10px 25px;
+background:#F59E0B;
+border-radius:50px;
+font-weight:bold;
+color:#0F172A;
+font-size:18px;">
+📅 Periodo 2021 - 2026
+</div>
+
+<hr style="
+border:1px solid #334155;
+width:70%;
+margin:30px auto;">
+
+<div style="
+max-width:900px;
+margin:auto;
+padding:15px 25px;">
+
+<p style="
+color:#CBD5E1;
+font-size:18px;
+line-height:1.8;
+text-align:justify;">
+La accidentalidad vial representa uno de los principales retos para la seguridad y movilidad en los municipios de <b>Facatativá, Funza, Madrid y Mosquera</b>. El crecimiento urbano y el aumento del flujo vehicular han incrementado los riesgos en las vías durante el periodo <b>2021–2026</b>. Este proyecto busca analizar los datos, identificar factores de riesgo, zonas críticas y patrones de ocurrencia, generando información que apoye la toma de decisiones y el fortalecimiento de estrategias de prevención vial.
+</p>
+
+</div>
+
+</div>
+
+=== Cell 1 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        01
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚗 Importar Librerias
+        </h2>
+    </div>
+</div>
+
+=== Cell 2 (code) ===
+# 1. Configuración del Sistema y Entorno
+import os
+os.environ["OMP_NUM_THREADS"] = "1"
+
+# 2. Procesamiento de Datos
+import pandas as pd
+import numpy as np
+
+# 3. Visualización de Datos
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+import matplotlib.lines as mlines
+import seaborn as sns
+from matplotlib.colors import ListedColormap
+
+# 4. Preprocesamiento y Pipeline de Machine Learning
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.preprocessing import (
+    LabelEncoder, 
+    StandardScaler, 
+    OneHotEncoder
+)
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.decomposition import PCA
+
+# 5. Modelos de Machine Learning (Supervisado y No Supervisado)
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.tree import plot_tree
+from sklearn.cluster import KMeans
+from xgboost import XGBClassifier
+
+# 6. Evaluación de Modelos
+from sklearn.metrics import (
+    accuracy_score,
+    classification_report,
+    confusion_matrix
+)
+
+# 7. Exportación y Persistencia del Modelo
+import joblib
+
+=== Cell 3 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        01
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚗 Carga de Datos
+        </h2>
+    </div>
+</div>
+
+=== Cell 4 (code) ===
+df = pd.read_csv('transito_sabana_occidente.csv', encoding='utf-8-sig')
+df.head()
+
+=== Cell 5 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        02
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚗 Exploración Básica
+        </h2>
+    </div>
+</div>
+
+=== Cell 6 (code) ===
+df.info ()
+
+=== Cell 7 (code) ===
+df.shape
+
+=== Cell 8 (code) ===
+df.columns = [
+    'Fecha_hecho',
+    'Departamento',
+    'Codigo_municipio',
+    'Municipio',
+    'Cantidad',
+    'Tipo_evento',
+    'Año',
+    'Tipo',
+    'Armas_medios',
+    'Genero',
+    'Grupo_etario',
+    'Zona',
+    'Edad',
+    'Usuario_via',
+    'Actor_vial'
+]
+
+=== Cell 9 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        03
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚗 Limpieza de Datos
+        </h2>
+    </div>
+</div>
+
+=== Cell 10 (code) ===
+df['Fecha_hecho'] = pd.to_datetime(
+    df['Fecha_hecho'],
+    format='mixed',
+    errors='coerce'
+)
+
+=== Cell 11 (code) ===
+df.columns = (
+    df.columns
+    .str.strip()
+    .str.replace(" ", "_")
+    .str.replace("*", "", regex=False)
+)
+df.columns = df.columns.str.capitalize()
+cols_texto = df.select_dtypes(include=['object', 'string']).columns
+
+for col in cols_texto:
+    df[col] = df[col].str.capitalize()
+
+=== Cell 12 (code) ===
+print(df.duplicated().sum())
+
+=== Cell 13 (code) ===
+df.info()
+
+=== Cell 14 (code) ===
+df['Edad'] = df['Edad'].astype('Int64')
+
+=== Cell 15 (code) ===
+df.loc[df['Edad'] == 100, 'Edad'] = 10
+
+=== Cell 16 (code) ===
+df.rename(columns={'Cod_muni': 'Codigo_municipio'}, inplace=True)
+
+=== Cell 17 (code) ===
+df = df.rename(columns={'Usuariovia': 'Usuario_via'})
+
+=== Cell 18 (code) ===
+df = df.rename(columns={'Actorvial': 'Actor_vial'})
+
+=== Cell 19 (code) ===
+df['Edad'].value_counts().sort_index()
+
+=== Cell 20 (code) ===
+df = df.drop(
+    columns=[
+        'Año',
+        'Tipo'],
+    errors='ignore'
+)
+
+=== Cell 21 (code) ===
+df.describe().style.format(thousands=".", precision=0)
+
+=== Cell 22 (code) ===
+df.info()
+
+=== Cell 23 (code) ===
+df['Municipio'].value_counts().sort_index()
+
+=== Cell 24 (code) ===
+df['Tipo_evento'].value_counts().sort_index()
+
+=== Cell 25 (code) ===
+df['Zona'].value_counts().sort_index()
+
+=== Cell 26 (code) ===
+df['Genero'].value_counts().sort_index()
+
+=== Cell 27 (code) ===
+df['Armas_medios'].value_counts().sort_index()
+
+=== Cell 28 (code) ===
+df['Grupo_etario'].value_counts().sort_index()
+
+=== Cell 29 (code) ===
+df['Usuario_via'].value_counts().sort_index()
+
+=== Cell 30 (code) ===
+df['Actor_vial'].value_counts().sort_index()
+
+=== Cell 31 (code) ===
+df['Genero'] = df['Genero'].replace({
+    'Mujer': 'Femenino',
+    'Hombre': 'Masculino',
+    'No reportado': 'No Reportado',
+    'No resportado ': 'No Reportado',
+    '-': 'No Reportado'
+})
+
+=== Cell 32 (code) ===
+df['Genero'].value_counts().sort_index()
+
+=== Cell 33 (code) ===
+df['Armas_medios'] = df['Armas_medios'].replace({
+    '-': 'No Reportado',
+    'VEHICULO': 'No Reportado',
+    'No reportado': 'No Reportado',
+    'No resportado ': 'No Reportado'
+})
+
+=== Cell 34 (code) ===
+df['Armas_medios'].value_counts().sort_index()
+
+=== Cell 35 (code) ===
+df['Grupo_etario'] = df['Grupo_etario'].replace({
+    'No resportado ': 'No Reportado',
+    '-': 'No Reportado'
+})
+
+=== Cell 36 (code) ===
+df['Grupo_etario'].value_counts().sort_index()
+
+=== Cell 37 (code) ===
+cols_texto = df.select_dtypes(include=['object', 'string']).columns
+df[cols_texto] = df[cols_texto].fillna('No Reportado')
+
+df['Edad'] = df['Edad'].fillna(df['Edad'].median())
+
+=== Cell 38 (code) ===
+df = df.drop_duplicates()
+
+=== Cell 39 (code) ===
+df.info ()
+
+=== Cell 40 (code) ===
+df['Tipo_evento'].value_counts()
+
+=== Cell 41 (code) ===
+df.to_csv('Archivo_Accidentes.csv', index=False, encoding='utf-8-sig')
+
+print("✅ ¡Archivo guardado exitosamente como 'Archivo_Accidentes.csv'!")
+
+=== Cell 42 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        04
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚗 Analisis Exploratorio
+        </h2>
+    </div>
+</div>
+
+=== Cell 43 (code) ===
+print("Total accidentes:", df['Cantidad'].sum())
+
+=== Cell 44 (code) ===
+print(df['Edad'].describe())
+
+=== Cell 45 (code) ===
+acc_municipio = df.groupby('Municipio')['Cantidad'].sum().sort_values(ascending=False)
+
+print(acc_municipio)
+
+=== Cell 46 (code) ===
+color_barras = '#38BDF8'
+color_destacado = '#F59E0B'
+fondo = '#1E293B'
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+
+barras = ax.bar(
+    acc_municipio.index,
+    acc_municipio.values,
+    color=color_barras,
+    edgecolor='white',
+    linewidth=1.5
+)
+
+
+max_idx = np.argmax(acc_municipio.values)
+barras[max_idx].set_color(color_destacado)
+
+
+for barra in barras:
+    altura = barra.get_height()
+    ax.text(
+        barra.get_x() + barra.get_width()/2,
+        altura,
+        f'{int(altura)}',
+        ha='center',
+        va='bottom',
+        fontsize=11,
+        fontweight='bold',
+        color='white'
+    )
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+ax.set_title(
+    'Accidentes por Municipio',
+    fontsize=18,
+    fontweight='bold',
+    color='#38BDF8'
+)
+
+ax.set_xlabel('Municipio', color='white')
+ax.set_ylabel('Cantidad de Accidentes', color='white')
+
+ax.tick_params(colors='white')
+
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+ax.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 47 (code) ===
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+
+n, bins, patches = ax.hist(
+    df['Edad'],
+    bins=10,
+    edgecolor='#0F172A',
+    linewidth=1.5
+)
+
+
+max_freq = max(n)
+
+for frecuencia, barra in zip(n, patches):
+    if frecuencia == max_freq:
+        barra.set_facecolor(naranja)
+    else:
+        barra.set_facecolor(azul)
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+ax.set_title(
+    'Distribución de Edades',
+    fontsize=18,
+    fontweight='bold',
+    color=azul
+)
+
+
+ax.set_xlabel('Edad', color='white', fontsize=12)
+ax.set_ylabel('Frecuencia', color='white', fontsize=12)
+
+
+ax.tick_params(colors='white')
+
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+
+ax.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 48 (code) ===
+top_municipios = (
+    df.groupby('Municipio')['Cantidad']
+    .sum()
+    .sort_values(ascending=False)
+)
+
+print(top_municipios.head(10))
+
+=== Cell 49 (code) ===
+edad_municipio = (
+    df.groupby('Municipio')['Edad']
+    .mean()
+    .sort_values(ascending=False)
+)
+
+print(edad_municipio)
+
+=== Cell 50 (code) ===
+df['Fecha_hecho'] = pd.to_datetime(df['Fecha_hecho'])
+
+=== Cell 51 (code) ===
+df['Mes'] = df['Fecha_hecho'].dt.month
+
+acc_mes = df.groupby('Mes')['Cantidad'].sum()
+
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+
+meses = [
+    'Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun',
+    'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'
+]
+
+fig, ax = plt.subplots(figsize=(12,6))
+
+
+barras = ax.bar(
+    acc_mes.index,
+    acc_mes.values,
+    color=azul,
+    edgecolor='#0F172A',
+    linewidth=1.5
+)
+
+
+max_idx = np.argmax(acc_mes.values)
+barras[max_idx].set_color(naranja)
+
+
+for barra in barras:
+    altura = barra.get_height()
+    ax.text(
+        barra.get_x() + barra.get_width()/2,
+        altura,
+        f'{int(altura)}',
+        ha='center',
+        va='bottom',
+        fontsize=10,
+        fontweight='bold',
+        color='white'
+    )
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+ax.set_title(
+    'Accidentes por Mes',
+    fontsize=18,
+    fontweight='bold',
+    color=azul
+)
+
+
+ax.set_xlabel('Mes', color='white', fontsize=12)
+ax.set_ylabel('Cantidad de Accidentes', color='white', fontsize=12)
+
+
+ax.set_xticks(acc_mes.index)
+ax.set_xticklabels([meses[i-1] for i in acc_mes.index])
+
+
+ax.tick_params(colors='white')
+
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+
+ax.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 52 (code) ===
+acc_geo = (
+    df.groupby('Municipio')['Cantidad']
+    .sum()
+    .sort_values(ascending=False)
+)
+
+print(acc_geo)
+
+=== Cell 53 (code) ===
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+tabla = df.pivot_table(
+    values='Cantidad',
+    index='Municipio',
+    columns='Tipo_evento',
+    aggfunc='sum',
+    fill_value=0
+)
+
+plt.figure(figsize=(12,7))
+
+ax = sns.heatmap(
+    tabla,
+    annot=True,
+    fmt='g',
+    cmap='Blues',
+    linewidths=0.5,
+    linecolor='#0F172A',
+    cbar=True
+)
+
+
+plt.gcf().patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+plt.title(
+    'Mapa de calor de accidentes',
+    fontsize=18,
+    fontweight='bold',
+    color=azul
+)
+
+plt.xlabel('Tipo de evento', color='white', fontsize=12)
+plt.ylabel('Municipio', color='white', fontsize=12)
+
+ax.tick_params(colors='white')
+
+
+vals = tabla.values
+norm = plt.Normalize(vals.min(), vals.max())
+cmap = plt.cm.Blues
+
+for text, val in zip(ax.texts, vals.flatten()):
+    r, g, b, _ = cmap(norm(val))
+
+    # si el color es muy claro → texto oscuro
+    luminance = 0.299*r + 0.587*g + 0.114*b
+
+    if luminance > 0.6:
+        text.set_color('#0F172A')  # oscuro
+    else:
+        text.set_color('white')    # claro
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 54 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        🌲
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+             Random Forest
+        </h2>
+    </div>
+</div>
+
+=== Cell 55 (code) ===
+df_rf = df.copy()
+
+=== Cell 56 (code) ===
+X = df_rf[
+    [
+        'Municipio',
+        'Genero',
+        'Edad',
+        'Zona',
+        'Armas_medios',
+        'Grupo_etario'
+    ]
+]
+
+y = df_rf['Tipo_evento']
+
+=== Cell 57 (code) ===
+print(df_rf.shape)
+
+=== Cell 58 (code) ===
+X = df_rf[
+    [
+        'Municipio',
+        'Genero',
+        'Edad',
+        'Zona',
+        'Armas_medios',
+        'Grupo_etario'
+    ]
+].copy()
+
+y = df_rf['Tipo_evento'].copy()
+
+print("X:", X.shape)
+print("y:", y.shape)
+
+=== Cell 59 (code) ===
+df_encoded = pd.get_dummies(
+    df_rf,
+    columns=['Genero'],
+    drop_first=True
+)
+
+df_encoded.head()
+
+=== Cell 60 (code) ===
+X = df_rf[
+    [
+        'Municipio',
+        'Genero',
+        'Edad',
+        'Zona',
+        'Armas_medios',
+        'Grupo_etario'
+    ]
+].copy()
+
+y = df_rf['Tipo_evento'].copy()
+
+=== Cell 61 (code) ===
+X_encoded = X.copy()
+
+for col in X_encoded.columns:
+    if X_encoded[col].dtype == 'object' or str(X_encoded[col].dtype) == 'string':
+        le = LabelEncoder()
+        X_encoded[col] = le.fit_transform(X_encoded[col].astype(str))
+
+y_le = LabelEncoder()
+y_encoded = y_le.fit_transform(y.astype(str))
+
+=== Cell 62 (code) ===
+X = pd.get_dummies(X)
+
+=== Cell 63 (code) ===
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+=== Cell 64 (code) ===
+modelo = RandomForestClassifier(
+    n_estimators=200,
+    random_state=42
+)
+
+modelo.fit(X_train, y_train)
+
+=== Cell 65 (code) ===
+modelo = RandomForestClassifier(
+    n_estimators = 200,
+    max_depth = None,
+    min_samples_split = 5,
+    min_samples_leaf = 2,
+    class_weight = 'balanced',
+    random_state = 42,
+    n_jobs = -1
+)
+modelo.fit(X_train, y_train)
+
+=== Cell 66 (code) ===
+from sklearn.tree import DecisionTreeClassifier
+modelo2 = DecisionTreeClassifier (max_depth = 4, random_state = 42)
+modelo2.fit(X_train, y_train)
+
+=== Cell 67 (code) ===
+print ('Train:', modelo.score (X_train, y_train))
+print ('Test:', modelo.score (X_test, y_test))
+
+=== Cell 68 (code) ===
+print ('Árbol:', modelo2.score (X_test, y_test))
+print ('Random Forest:', modelo.score (X_test, y_test))
+
+=== Cell 69 (code) ===
+pred = modelo.predict(X_test)
+
+print(classification_report(
+        y_test,
+        pred))
+
+=== Cell 70 (code) ===
+arbol = modelo.estimators_[0]
+
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+plt.figure(figsize=(30, 15))
+
+fig, ax = plt.subplots(figsize=(30, 15))
+
+plot_tree(
+    arbol,
+    feature_names=X.columns,
+    class_names=[str(c) for c in modelo.classes_],
+    filled=True,
+    rounded=True,
+    max_depth=3,
+    fontsize=10,
+    ax=ax
+)
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+plt.title(
+    'Estructura de un Árbol del Random Forest',
+    fontsize=20,
+    fontweight='bold',
+    color=azul
+)
+
+
+plt.savefig(
+    "arbol_random_forest.png",
+    dpi=300,
+    bbox_inches='tight',
+    facecolor=fondo
+)
+
+plt.show()
+
+=== Cell 71 (code) ===
+y_pred = modelo.predict(X_test)
+
+print("--- Reporte de Clasificación ---\n")
+print(classification_report(y_test, y_pred))
+
+cm = confusion_matrix(y_test, y_pred)
+
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+plt.figure(figsize=(8,6))
+
+ax = sns.heatmap(
+    cm,
+    annot=True,
+    fmt='g',
+    cmap='Blues',   
+    linewidths=1,
+    linecolor='#0F172A',
+    cbar=False
+)
+
+
+plt.gcf().patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+plt.title(
+    'Matriz de Confusión - Random Forest',
+    fontsize=16,
+    fontweight='bold',
+    color=azul
+)
+
+
+plt.xlabel('Predicción', color='white', fontsize=12)
+plt.ylabel('Valor Real', color='white', fontsize=12)
+
+
+ax.tick_params(colors='white')
+
+
+vals = cm.flatten()
+norm = plt.Normalize(vmin=cm.min(), vmax=cm.max())
+cmap = plt.cm.Blues
+
+for text, val in zip(ax.texts, vals):
+    r, g, b, _ = cmap(norm(val))
+
+    luminance = 0.299*r + 0.587*g + 0.114*b
+
+    if luminance > 0.6:
+        text.set_color('#0F172A')  # oscuro
+    else:
+        text.set_color('white')    # claro
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 72 (code) ===
+X_encoded = pd.get_dummies(X)
+
+modelo = RandomForestClassifier(n_estimators=200, random_state=42)
+
+scores_rf = cross_val_score(modelo, X_encoded, y_encoded, cv=5)
+
+print("Scores RF:", scores_rf)
+print("Promedio RF:", scores_rf.mean())
+
+=== Cell 73 (code) ===
+modelo.fit(X_train, y_train)
+
+print(modelo.feature_importances_)
+
+=== Cell 74 (code) ===
+importances = pd.Series(
+    modelo.feature_importances_,
+    index=X.columns
+)
+
+importances.sort_values().plot(
+    kind='barh',
+    figsize=(10,8),
+    color='#38BDF8',        
+    edgecolor='#0F172A',    
+    linewidth=1.2
+)
+
+
+plt.gca().patches[-1].set_color('#F59E0B')
+
+plt.title(
+    'Importancia de Variables',
+    fontsize=16,
+    color='#38BDF8'
+)
+
+plt.xlabel('Importancia', color='white')
+plt.ylabel('Variables', color='white')
+
+plt.gcf().patch.set_facecolor('#1E293B')
+plt.gca().set_facecolor('#1E293B')
+
+plt.tick_params(colors='white')
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 75 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🚦 Distribución de Tipos de Evento
+        </h2>
+    </div>
+</div>
+
+=== Cell 76 (code) ===
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+
+
+conteo = df_rf['Tipo_evento'].value_counts()
+
+fig, ax = plt.subplots(figsize=(10,6))
+
+
+barras = ax.bar(
+    conteo.index,
+    conteo.values,
+    color=azul,
+    edgecolor='#0F172A',
+    linewidth=1.5
+)
+
+
+max_idx = np.argmax(conteo.values)
+barras[max_idx].set_color(naranja)
+
+
+total = conteo.sum()
+
+
+for barra in barras:
+    altura = barra.get_height()
+    porcentaje = (altura / total) * 100
+
+    ax.text(
+        barra.get_x() + barra.get_width()/2,
+        altura,
+        f'{int(altura)}\n({porcentaje:.1f}%)',
+        ha='center',
+        va='bottom',
+        fontsize=10,
+        fontweight='bold',
+        color='white'
+    )
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+ax.set_title(
+    'Distribución de Tipos de Evento',
+    fontsize=18,
+    fontweight='bold',
+    color=azul
+)
+
+ax.set_xlabel('Tipo de Evento', color='white', fontsize=12)
+ax.set_ylabel('Cantidad', color='white', fontsize=12)
+
+
+ax.tick_params(colors='white')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+
+ax.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 77 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            📊 Edad vs Tipo_evento
+        </h2>
+    </div>
+</div>
+
+=== Cell 78 (code) ===
+plt.figure(figsize=(10,6))
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+morado = '#A78BFA'
+verde = '#34D399'
+
+
+palette = [azul, naranja, morado, verde]
+
+ax = sns.boxplot(
+    data=df_rf,
+    x='Tipo_evento',
+    y='Edad',
+    hue='Tipo_evento',
+    palette=palette,
+    legend=False,
+    width=0.5,
+    linewidth=2,
+    showmeans=True,
+    meanprops={
+        "marker": "o",
+        "markerfacecolor": "white",
+        "markeredgecolor": "black",
+        "markersize": 8
+    }
+)
+
+
+ax.set_facecolor(fondo)
+plt.gcf().patch.set_facecolor(fondo)
+
+
+plt.title(
+    'Distribución de Edad por Tipo de Evento',
+    fontsize=16,
+    weight='bold',
+    color=azul,
+    pad=20
+)
+
+plt.xlabel('Tipo de Evento', color='white')
+plt.ylabel('Edad', color='white')
+
+ax.grid(
+    axis='y',
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+ax.tick_params(colors='white')
+
+
+sns.despine()
+
+plt.xticks(rotation=0)
+plt.tight_layout()
+plt.show()
+
+=== Cell 79 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            👤 Género vs Tipo de Evento
+        </h2>
+    </div>
+</div>
+
+=== Cell 80 (code) ===
+plt.figure(figsize=(9,5))
+
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+verde = '#34D399'
+rojo = '#F87171'
+
+palette = [azul, naranja, verde, rojo]
+
+ax = sns.countplot(
+    data=df_rf,
+    x='Genero',
+    hue='Tipo_evento',
+    palette=palette
+)
+
+
+ax.set_facecolor(fondo)
+plt.gcf().patch.set_facecolor(fondo)
+
+
+plt.title(
+    'Género vs Tipo de Evento',
+    fontsize=16,
+    weight='bold',
+    color=azul,
+    pad=25
+)
+
+
+plt.xlabel('Género', fontsize=12, color='white')
+plt.ylabel('Cantidad', fontsize=12, color='white')
+
+
+ax.grid(axis='y', linestyle='--', alpha=0.3, color='white')
+
+
+for p in ax.patches:
+    height = p.get_height()
+
+    if height > 0:
+        ax.text(
+            p.get_x() + p.get_width()/2,
+            height + 0.5,
+            int(height),
+            ha='center',
+            fontsize=9,
+            color='white'
+        )
+
+
+ax.tick_params(colors='white')
+sns.despine()
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 81 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        🗺️
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+             K-Means
+        </h2>
+    </div>
+</div>
+
+=== Cell 82 (code) ===
+riesgo = (
+    df.groupby('Municipio')
+      .agg(
+          Eventos=('Cantidad','sum'),
+          Edad_promedio=('Edad','mean')
+      )
+      .reset_index()
+)
+
+=== Cell 83 (code) ===
+X = riesgo[
+    [
+        'Eventos',
+        'Edad_promedio'
+    ]
+]
+
+scaler = StandardScaler()
+
+X_scaled = scaler.fit_transform(X)
+
+=== Cell 84 (code) ===
+kmeans = KMeans(
+    n_clusters=4,
+    random_state=42,
+    n_init=10
+)
+
+=== Cell 85 (code) ===
+riesgo['Cluster'] = kmeans.fit_predict(
+    riesgo[['Eventos', 'Edad_promedio']]
+)
+
+=== Cell 86 (code) ===
+kmeans.fit(riesgo[['Eventos', 'Edad_promedio']])
+
+riesgo['Cluster'] = kmeans.labels_
+
+=== Cell 87 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            🎯 Clusters de Riesgo por Municipio
+        </h2>
+    </div>
+</div>
+
+=== Cell 88 (code) ===
+fondo = '#1E293B'
+azul = '#38BDF8'
+
+fig, ax = plt.subplots(figsize=(12,8))
+
+scatter = ax.scatter(
+    riesgo['Eventos'],
+    riesgo['Edad_promedio'],
+    c=riesgo['Cluster'],
+    cmap='viridis',  
+    s=120,
+    edgecolors='white',
+    linewidth=1
+)
+
+
+for _, row in riesgo.iterrows():
+    ax.annotate(
+        row['Municipio'],
+        (row['Eventos'], row['Edad_promedio']),
+        fontsize=8,
+        color='white',
+        xytext=(5, 5),
+        textcoords='offset points'
+    )
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+ax.set_title(
+    'Clusters de Riesgo por Municipio',
+    fontsize=18,
+    fontweight='bold',
+    color=azul,
+    pad=20
+)
+
+ax.set_xlabel('Eventos', color='white', fontsize=12)
+ax.set_ylabel('Edad Promedio', color='white', fontsize=12)
+
+
+ax.grid(
+    linestyle='--',
+    alpha=0.3,
+    color='white'
+)
+
+
+ax.tick_params(colors='white')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+
+cbar = plt.colorbar(scatter)
+cbar.set_label('Cluster', color='white')
+cbar.ax.yaxis.set_tick_params(color='white')
+plt.setp(cbar.ax.get_yticklabels(), color='white')
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 89 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            📈 Selección del Número Óptimo de Clústeres
+        </h2>
+    </div>
+</div>
+
+=== Cell 90 (code) ===
+df_kmeans = df.copy()
+
+# Convertir fecha a variable numérica
+df_kmeans['Fecha_hecho'] = pd.to_datetime(df_kmeans['Fecha_hecho'])
+df_kmeans['Año'] = df_kmeans['Fecha_hecho'].dt.year
+df_kmeans['Mes'] = df_kmeans['Fecha_hecho'].dt.month
+df_kmeans['Dia'] = df_kmeans['Fecha_hecho'].dt.day
+
+# Eliminar la fecha original
+df_kmeans = df_kmeans.drop(columns=['Fecha_hecho'])
+
+# Variables numéricas y categóricas
+numericas = ['Codigo_municipio', 'Cantidad', 'Edad', 'Año', 'Mes', 'Dia']
+
+categoricas = [
+    'Departamento',
+    'Municipio',
+    'Tipo_evento',
+    'Armas_medios',
+    'Genero',
+    'Grupo_etario',
+    'Zona',
+    'Usuario_via',
+    'Actor_vial'
+]
+
+# Transformaciones
+preprocessor = ColumnTransformer(
+    transformers=[
+        ('num', Pipeline([
+            ('imputer', SimpleImputer(strategy='median')),
+            ('scaler', StandardScaler())
+        ]), numericas),
+
+        ('cat', Pipeline([
+            ('imputer', SimpleImputer(strategy='most_frequent')),
+            ('onehot', OneHotEncoder(handle_unknown='ignore'))
+        ]), categoricas)
+    ]
+)
+
+# Transformar datos
+X_scaled = preprocessor.fit_transform(df_kmeans)
+
+# Método del codo
+wcss = []
+
+for i in range(1, 11):
+    kmeans = KMeans(
+        n_clusters=i,
+        init='k-means++',
+        random_state=42,
+        n_init=10
+    )
+    kmeans.fit(X_scaled)
+    wcss.append(kmeans.inertia_)
+
+# Gráfico
+plt.figure(figsize=(8,5))
+plt.plot(range(1, 11), wcss, marker='*', color='purple')
+plt.title('Método del Codo')
+plt.xlabel('Número de Clústeres')
+plt.ylabel('WCSS')
+plt.grid(True)
+plt.show()
+
+=== Cell 91 (code) ===
+wcss = []
+
+
+max_k = min(10, X_scaled.shape[0])
+
+for i in range(1, max_k + 1):
+    kmeans = KMeans(
+        n_clusters=i,
+        init='k-means++',
+        random_state=42,
+        n_init=10
+    )
+
+    kmeans.fit(X_scaled)
+    wcss.append(kmeans.inertia_)
+
+
+fondo = '#1E293B'
+azul = '#38BDF8'
+
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.plot(
+    range(1, max_k + 1),
+    wcss,
+    marker='*',
+    markersize=10,
+    linewidth=2.5,
+    color=azul
+)
+
+
+for x, y in zip(range(1, max_k + 1), wcss):
+    ax.text(
+        x,
+        y,
+        f'{y:,.0f}',
+        ha='center',
+        va='bottom',
+        fontsize=10,
+        color='white'
+    )
+
+
+fig.patch.set_facecolor(fondo)
+ax.set_facecolor(fondo)
+
+
+ax.set_title('Método del Codo', fontsize=18, fontweight='bold', color=azul, pad=20)
+
+ax.set_xlabel('Número de Clústeres (k)', fontsize=12, color='white')
+ax.set_ylabel('WCSS', fontsize=12, color='white')
+
+ax.grid(linestyle='--', alpha=0.3, color='white')
+ax.tick_params(colors='white')
+
+ax.spines['top'].set_visible(False)
+ax.spines['right'].set_visible(False)
+ax.spines['bottom'].set_color('white')
+ax.spines['left'].set_color('white')
+
+plt.tight_layout()
+plt.show()
+
+=== Cell 92 (code) ===
+# 1. Definir las columnas (asegúrate de que existan en tu df_rf)
+columnas_numericas = ['Edad', 'Mes'] # o las que estés usando
+
+# 2. RE-CREAR X para que tenga las 13,076 filas
+X = df_rf[columnas_numericas].copy()
+X = X.fillna(X.median())  # Rellenamos nulos para mantener todas las filas
+
+# 3. Escalar los datos (X_scaled tendrá ahora 13,076 filas)
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# 4. Configurar y entrenar K-Means
+kmeans = KMeans(
+    n_clusters=2,
+    init='k-means++',
+    random_state=42,
+    n_init=10
+)
+kmeans.fit(X_scaled)
+
+# 5. Predecir
+clusters = kmeans.predict(X_scaled)
+
+# 6. ASIGNAR (Ahora sí: clusters(13076) e index(13076) coinciden)
+df_rf['Cluster'] = pd.Series(clusters, index=X.index)
+
+# --- Visualización de resultados ---
+centroides = kmeans.cluster_centers_
+print("Coordenadas de los centroides:")
+print(centroides)
+
+print("\nColores de los clústeres:")
+n_clusters = kmeans.n_clusters
+clusters_idx = np.arange(n_clusters)
+cmap = plt.colormaps['viridis'].resampled(n_clusters)
+
+for i in clusters_idx:
+    print(f"Clúster {i}: color RGBA {cmap(i)}")
+
+
+=== Cell 93 (code) ===
+# --- TUS COLORES ---
+fondo = '#1E293B'
+azul = '#38BDF8'
+naranja = '#F59E0B'
+verde = '#34D399'
+rojo = '#F87171'
+morado = '#A78BFA'
+palette = [azul, naranja, verde, morado, rojo]
+from matplotlib.colors import ListedColormap
+custom_cmap = ListedColormap(palette[:kmeans.n_clusters])
+
+# --- TU CÓDIGO ORIGINAL CON CAMBIOS DE COLOR ---
+pca = PCA(n_components=2)
+X_pca = pca.fit_transform(X_scaled)
+
+n_clusters = kmeans.n_clusters
+
+# Cambiado: usamos tu paleta para los parches de la leyenda
+labels = [f'Clúster {i}' for i in range(n_clusters)]
+patches = [mpatches.Patch(color=palette[i], label=labels[i]) for i in range(n_clusters)]
+
+centroid_marker = mlines.Line2D(
+    [],
+    [],
+    color=rojo, # Cambiado a tu rojo
+    marker='+',
+    linestyle='None',
+    markersize=12,
+    markeredgewidth=2,
+    label='Centroides'
+)
+
+plt.figure(figsize=(10, 6))
+
+# Aplicar fondo oscuro a la figura
+plt.gcf().set_facecolor(fondo)
+ax = plt.gca()
+ax.set_facecolor(fondo)
+
+# Puntos
+plt.scatter(
+    X_pca[:, 0],
+    X_pca[:, 1],
+    c=clusters,
+    cmap=custom_cmap, # Cambiado a tu paleta
+    s=40,
+    alpha=0.7
+)
+
+# Centroides
+centroides_pca = pca.transform(kmeans.cluster_centers_)
+
+plt.scatter(
+    centroides_pca[:, 0],
+    centroides_pca[:, 1],
+    s=300,
+    marker='+',
+    c=rojo, # Cambiado a tu rojo
+    lw=3
+)
+
+# Textos en blanco y azul para estilo oscuro
+plt.title('Segmentación con K-Means', color=azul, fontsize=16, weight='bold', pad=25)
+plt.xlabel('Componente Principal 1', color='white')
+plt.ylabel('Componente Principal 2', color='white')
+ax.tick_params(colors='white')
+
+plt.legend(
+    handles=patches + [centroid_marker],
+    bbox_to_anchor=(1.05, 1),
+    loc='upper left',
+    borderaxespad=0.,
+    facecolor=fondo, # Fondo de leyenda oscuro
+    edgecolor='white'
+)
+# Color de texto de leyenda a blanco
+plt.setp(plt.gca().get_legend().get_texts(), color='white')
+
+plt.grid(True, linestyle='--', alpha=0.2, color='white') # Rejilla sutil blanca
+plt.tight_layout()
+plt.show()
+
+
+=== Cell 94 (code) ===
+print(df_rf.columns.tolist())
+
+=== Cell 95 (markdown) ===
+<div style="display: inline-flex; align-items: stretch; border: 1px solid #334155; border-radius: 15px; overflow: hidden; margin: 35px 0 20px 0;">
+    <div style="background: #F59E0B; display: flex; align-items: center; padding: 0 15px; color: #0F172A; font-weight: bold; font-size: 20px;">
+        🤖
+    </div>
+    <div style="background: #1E293B; padding: 10px 20px;">
+        <h2 style="
+            color: #38BDF8;
+            font-family: 'Century Gothic', sans-serif;
+            font-size: 22px;
+            font-weight: bold;
+            margin: 0;">
+            Predictor
+        </h2>
+    </div>
+</div>
+
+=== Cell 96 (code) ===
+def capturar_datos_y_predecir():
+    print("="*50)
+    print("🚦 SISTEMA DE PREDICCIÓN DE RIESGO DE ACCIDENTE")
+    print("="*50)
+    
+    try:
+        cols_modelo = list(modelo.feature_names_in_)
+        clases = modelo.classes_ # Esto nos dice qué significan los 4 números
+
+        # Captura de datos
+        edad = int(input("Edad: "))
+        municipio = input("📍 Ingrese municipio (Funza, Madrid, Mosquera, Facatativá): ").title()
+        zona = input("🌎 Ingrese zona (Urbana, Rural): ").title()
+        genero = input("👤 Ingrese género (Masculino, Femenino): ").title()
+        actor = input("🚗 Ingrese actor vial (Motociclista, Conductor, Peatón, Ciclista, Pasajero): ").title()
+
+        # Crear entrada
+        entrada = pd.DataFrame(0, index=[0], columns=cols_modelo)
+        if 'Edad' in entrada.columns:
+            entrada.at[0, 'Edad'] = edad
+
+        # Mapeo exacto según tus columnas detectadas
+        mapeo = {
+            f'Municipio_{municipio}': 1,
+            f'Zona_{zona}': 1,
+            f'Genero_{genero}': 1,
+            f'Actor_vial_{actor}': 1
+        }
+
+        for col, val in mapeo.items():
+            if col in entrada.columns:
+                entrada.at[0, col] = val
+
+        # Predicción
+        prediccion = modelo.predict(entrada)[0]
+        probabilidades = modelo.predict_proba(entrada)[0]
+        
+        # Obtener la probabilidad más alta
+        max_prob = max(probabilidades)
+
+        print("\n" + "="*50)
+        print(f"📊 RESULTADO DE PREDICCIÓN: Clase {prediccion}")
+        print(f"Confianza del modelo: {max_prob:.2%}")
+        print("-" * 50)
+        print("Desglose de probabilidades por categoría:")
+        for i, clase in enumerate(clases):
+            print(f" - Categoría {clase}: {probabilidades[i]:.2%}")
+        print("="*50)
+
+    except Exception as e:
+        print(f"⚠️ Error: {e}")
+
+# Ejecutar
+capturar_datos_y_predecir()
+
+=== Cell 97 (code) ===
+joblib.dump(modelo, 'modelo_accidentes.pkl')
+print("¡Archivo generado correctamente! ✅")
+

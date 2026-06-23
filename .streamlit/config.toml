@@ -1,0 +1,10 @@
+[theme]
+# Streamlit no soporta dos secciones [theme] para light/dark nativamente,
+# pero usando base="light" y los colores del póster como base,
+# la app detectará el tema del sistema y nuestro CSS custom hará el toggle.
+base = "light"
+primaryColor = "#002855"
+backgroundColor = "#FFFFFF"
+secondaryBackgroundColor = "#F4F4F0"
+textColor = "#212529"
+font = "sans serif"
