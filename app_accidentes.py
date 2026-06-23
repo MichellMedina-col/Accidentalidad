@@ -50,6 +50,12 @@ if img_b64:
 else:
     banner_bg = "#1E293B"
 
+map_b64 = get_base64_of_bin_file("image_33ea3a.png")
+if map_b64:
+    map_bg = f"url('data:image/png;base64,{map_b64}')"
+else:
+    map_bg = 'url("image_33ea3a.png")'
+
 # ─── ESTADO GLOBAL DEL GLOW ────────────────────────────────────
 if 'risk_color' not in st.session_state:
     st.session_state.risk_color = '#4ADE80'  # Verde por defecto
@@ -148,6 +154,18 @@ st.markdown(f"""
     /* Aplicar colores de fondo */
     .stApp {{
         background: var(--bg-color) !important;
+    }}
+    .stApp::before {{
+        content: "";
+        position: fixed;
+        top: 0; left: 0; width: 100vw; height: 100vh;
+        background-image: {map_bg};
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        opacity: {'0.08' if tema_actual == 'Modo Oscuro' else '0.12'};
+        z-index: -1;
+        pointer-events: none;
     }}
     
     [data-testid="stSidebar"] {{
@@ -571,16 +589,21 @@ if "Inicio" in pagina:
                             glow_border = "1px solid rgba(211, 47, 47, 0.45)"
         
                     # Render del resultado con estilos INLINE (sin depender de clases CSS)
+                    import math
+                    angle_rad = math.radians(150 + 240 * (riesgo_pct / 100))
+                    pin_x = 110 + 80 * math.cos(angle_rad)
+                    pin_y = 100 + 80 * math.sin(angle_rad)
+
                     st.markdown(f"""
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; width: 100%;">
-                        <div style="position: relative; width: 200px; height: 200px; display: inline-block;">
-                            <svg width="200" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color}80);">
+                        <div style="position: relative; width: 220px; height: 200px; display: inline-block;">
+                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {{color}}80);">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
-                                <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
+                                <circle cx="110" cy="100" r="80" stroke="{{color}}" stroke-width="14" fill="transparent" stroke-dasharray="{{335 * (riesgo_pct/100)}} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {{color}}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
-                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 50px;">
-                                <div style="font-size: 1.5rem; margin-bottom: -5px;">📍</div>
-                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
+                            <div style="position: absolute; left: {{pin_x - 12}}px; top: {{pin_y - 24}}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {{color}}; transition: all 0.5s ease;">📍</div>
+                            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
+                                <div style="font-size: 2.5rem; font-weight: 800; color: {{color}}; line-height: 1; text-shadow: 0px 0px 15px {{color}};">{{riesgo_pct}}%</div>
                             </div>
                         </div>
                         <div style="background: {bg}; box-shadow: {glow_shadow}; border: {glow_border}; border-radius: 10px; padding: 14px 24px; width: 100%; display: block; margin-top: 20px; text-align: center;">
