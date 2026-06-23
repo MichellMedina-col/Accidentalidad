@@ -56,13 +56,20 @@ tema_actual = st.session_state.get('tema', 'Automático')
 if tema_actual == "Modo Claro":
     theme_vars = """
     :root {
-        --bg-color: #ffffff;
+        --bg-color: #FAFAFA;
         --sidebar-bg: #ffffff;
         --sidebar-text: #002855;
-        --card-bg: #F4F4F0;
+        --card-bg: #ffffff;
         --card-border: #E2E8F0;
-        --text-color: #1E293B;
+        --text-color: #002855;
         --title-color: #4A703C;
+        --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+        --glow-bajo-shadow: 0px 4px 12px rgba(16, 185, 129, 0.2);
+        --glow-bajo-border: 1px solid rgba(16, 185, 129, 0.3);
+        --glow-medio-shadow: 0px 4px 12px rgba(245, 158, 11, 0.2);
+        --glow-medio-border: 1px solid rgba(245, 158, 11, 0.3);
+        --glow-alto-shadow: 0px 4px 12px rgba(211, 47, 47, 0.2);
+        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.3);
     }
     """
 elif tema_actual == "Modo Oscuro":
@@ -75,18 +82,32 @@ elif tema_actual == "Modo Oscuro":
         --card-border: rgba(255, 255, 255, 0.08);
         --text-color: #F8FAFC;
         --title-color: #F8FAFC;
+        --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        --glow-bajo-shadow: 0px 0px 15px rgba(74, 222, 128, 0.5);
+        --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.7);
+        --glow-medio-shadow: 0px 0px 15px rgba(251, 192, 45, 0.6);
+        --glow-medio-border: 1px solid rgba(251, 192, 45, 0.8);
+        --glow-alto-shadow: 0px 0px 15px rgba(255, 23, 68, 0.6);
+        --glow-alto-border: 1px solid rgba(255, 23, 68, 0.8);
     }
     """
 else:
     theme_vars = """
     :root {
-        --bg-color: #ffffff;
+        --bg-color: #FAFAFA;
         --sidebar-bg: #ffffff;
         --sidebar-text: #002855;
-        --card-bg: #F4F4F0;
+        --card-bg: #ffffff;
         --card-border: #E2E8F0;
-        --text-color: #1E293B;
+        --text-color: #002855;
         --title-color: #4A703C;
+        --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
+        --glow-bajo-shadow: 0px 4px 12px rgba(16, 185, 129, 0.2);
+        --glow-bajo-border: 1px solid rgba(16, 185, 129, 0.3);
+        --glow-medio-shadow: 0px 4px 12px rgba(245, 158, 11, 0.2);
+        --glow-medio-border: 1px solid rgba(245, 158, 11, 0.3);
+        --glow-alto-shadow: 0px 4px 12px rgba(211, 47, 47, 0.2);
+        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.3);
     }
     @media (prefers-color-scheme: dark) {
         :root {
@@ -97,6 +118,13 @@ else:
             --card-border: rgba(255, 255, 255, 0.08);
             --text-color: #F8FAFC;
             --title-color: #F8FAFC;
+            --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            --glow-bajo-shadow: 0px 0px 15px rgba(74, 222, 128, 0.5);
+            --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.7);
+            --glow-medio-shadow: 0px 0px 15px rgba(251, 192, 45, 0.6);
+            --glow-medio-border: 1px solid rgba(251, 192, 45, 0.8);
+            --glow-alto-shadow: 0px 0px 15px rgba(255, 23, 68, 0.6);
+            --glow-alto-border: 1px solid rgba(255, 23, 68, 0.8);
         }
     }
     """
@@ -164,6 +192,9 @@ st.markdown(f"""
         text-align: center;
         margin-bottom: 2rem;
         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        width: 100%;
+        margin-left: 0;
+        margin-right: 0;
     }}
     .banner-title {{
         color: #ffffff !important;
@@ -186,7 +217,7 @@ st.markdown(f"""
         background-color: var(--card-bg) !important;
         border: 1px solid var(--card-border) !important;
         border-radius: 12px !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+        box-shadow: var(--card-shadow) !important;
         padding: 1.5rem !important;
         transition: all 0.3s ease;
     }}
@@ -204,6 +235,20 @@ st.markdown(f"""
         margin-top: 0 !important;
         text-transform: uppercase;
         letter-spacing: 0.05em;
+    }}
+
+    /* Efectos Glow Dinámicos */
+    .glow-bajo {{
+        box-shadow: var(--glow-bajo-shadow) !important;
+        border: var(--glow-bajo-border) !important;
+    }}
+    .glow-medio {{
+        box-shadow: var(--glow-medio-shadow) !important;
+        border: var(--glow-medio-border) !important;
+    }}
+    .glow-alto {{
+        box-shadow: var(--glow-alto-shadow) !important;
+        border: var(--glow-alto-border) !important;
     }}
 
     /* KPIs */
@@ -389,11 +434,14 @@ if "Inicio" in pagina:
     with p1:
         with st.container(border=True):
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
-            edad = st.slider("Edad del actor vial", 0, 100, 30)
-            mun_sel = st.selectbox("Municipio", sorted(df_full[COL_MUN].dropna().unique())) if COL_MUN else None
-            zon_sel = st.selectbox("Zona del incidente", sorted(df_full[COL_ZONA].dropna().unique())) if COL_ZONA else None
-            gen_sel = st.selectbox("Género", sorted(df_full[COL_GENERO].dropna().unique())) if COL_GENERO else None
-            act_sel = st.selectbox("Tipo de actor vial", sorted(df_full[COL_ACTOR].dropna().unique())) if COL_ACTOR else None
+            def limpiar_opciones(col_name):
+                opciones = sorted(df_full[col_name].dropna().unique())
+                return [o for o in opciones if str(o).lower() not in ['no reportado', 'sin informacion', 'sin información']]
+
+            mun_sel = st.selectbox("Municipio", limpiar_opciones(COL_MUN)) if COL_MUN else None
+            zon_sel = st.selectbox("Zona del incidente", limpiar_opciones(COL_ZONA)) if COL_ZONA else None
+            gen_sel = st.selectbox("Género", limpiar_opciones(COL_GENERO)) if COL_GENERO else None
+            act_sel = st.selectbox("Tipo de actor vial", limpiar_opciones(COL_ACTOR)) if COL_ACTOR else None
     
     with p2:
         with st.container(border=True):
@@ -476,14 +524,17 @@ if "Inicio" in pagina:
                         color = "#10b981" # Verde - RIESGO BAJO
                         label = "🟢 RIESGO BAJO - CONTROLADO"
                         bg = "rgba(16, 185, 129, 0.1)"
+                        glow_class = "glow-bajo"
                     elif riesgo_pct < 70:
                         color = "#F59E0B" # Amarillo Vial - RIESGO MEDIO
                         label = "🟠 RIESGO MEDIO - PRECAUCIÓN"
                         bg = "rgba(245, 158, 11, 0.1)"
+                        glow_class = "glow-medio"
                     else:
                         color = "#EF4444" # Rojo Alerta - RIESGO ALTO
                         label = "🔴 RIESGO ALTO - CRÍTICO"
                         bg = "rgba(239, 68, 68, 0.1)"
+                        glow_class = "glow-alto"
         
                     # Render del resultado
                     st.markdown(f"""
@@ -497,7 +548,7 @@ if "Inicio" in pagina:
                                 <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; transition: color 0.5s ease;">{riesgo_pct}%</div>
                             </div>
                         </div>
-                        <div style="background: {bg}; border: 1px solid {color}40; border-radius: 8px; padding: 12px 20px; width: 100%; margin-top: 20px; text-align: center; transition: all 0.5s ease;">
+                        <div class="{glow_class}" style="background: {bg}; border-radius: 8px; padding: 12px 20px; width: 100%; margin-top: 20px; text-align: center; transition: all 0.5s ease;">
                             <div style="font-size: 1.1rem; font-weight: 800; color: {color}; letter-spacing: 0.05em;">{label}</div>
                             <div style="font-size: 0.8rem; color: var(--text-color); opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
                         </div>
