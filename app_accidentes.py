@@ -50,6 +50,12 @@ if img_b64:
 else:
     banner_bg = "#1E293B"
 
+# ─── ESTADO GLOBAL DEL GLOW ────────────────────────────────────
+if 'risk_color' not in st.session_state:
+    st.session_state.risk_color = '#4ADE80'  # Verde por defecto
+
+risk_color = st.session_state.risk_color
+
 # ─── ESTILOS CSS ──────────────────────────────────────────────
 tema_actual = st.session_state.get('tema', 'Automático')
 
@@ -212,18 +218,18 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* Cajas Independientes (Contenedores) */
+    /* Cajas Independientes (Contenedores) - Glow Global Sincronizado */
     div[data-testid="stVerticalBlockBorderWrapper"] {{
         background-color: var(--card-bg) !important;
-        border: 1px solid var(--card-border) !important;
+        border: {'2px' if tema_actual == 'Modo Oscuro' else '1px'} solid {risk_color}{'' if tema_actual == 'Modo Oscuro' else '60'} !important;
         border-radius: 12px !important;
-        box-shadow: var(--card-shadow) !important;
+        box-shadow: 0px 0px {'20px' if tema_actual == 'Modo Oscuro' else '12px'} {risk_color}{'50' if tema_actual == 'Modo Oscuro' else '20'} !important;
         padding: 1.5rem !important;
-        transition: all 0.3s ease;
+        transition: all 0.5s ease;
     }}
     div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
         transform: translateY(-2px);
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+        box-shadow: 0px 0px {'30px' if tema_actual == 'Modo Oscuro' else '18px'} {risk_color}{'70' if tema_actual == 'Modo Oscuro' else '30'} !important;
     }}
 
     /* Títulos de los bloques */
@@ -354,7 +360,7 @@ with st.sidebar:
             </div>
             <div>
                 <div style="font-weight: 800; font-size: 18px; color: var(--text-color);">VialAnalytics</div>
-                <div style="font-size: 11px; color: #64748B; font-weight: 600;">SABANA OCCIDENTE</div>
+                <div style="font-size: 11px; color: #64748B; font-weight: 600;">SABANA OCCIDENTE - FACATATIVÁ, FUNZA, MADRID Y MOSQUERA</div>
             </div>
         </div>
     </div>
@@ -388,7 +394,7 @@ if "Inicio" in pagina:
     # ── BANNER PRINCIPAL ───────────────────────────────────────
     st.markdown(f"""
     <div class="banner-container">
-        <h1 class="banner-title">Análisis de la accidentalidad vial en los municipios de la Sabana de Occidente</h1>
+        <h1 class="banner-title">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</h1>
         <p class="banner-subtitle">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
     </div>
     """, unsafe_allow_html=True)
@@ -573,6 +579,23 @@ if "Inicio" in pagina:
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
+
+                    # Guardar color de riesgo en session_state para glow global
+                    st.session_state.risk_color = color
+
+                    # Inyectar CSS override para que TODOS los contenedores brillen con el color actual
+                    st.markdown(f"""
+                    <style>
+                    div[data-testid="stVerticalBlockBorderWrapper"] {{
+                        border: {'2px' if is_dark else '1px'} solid {color}{'FF' if is_dark else '60'} !important;
+                        box-shadow: 0px 0px {'20px' if is_dark else '12px'} {color}{'50' if is_dark else '20'} !important;
+                        transition: all 0.5s ease;
+                    }}
+                    div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
+                        box-shadow: 0px 0px {'30px' if is_dark else '18px'} {color}{'70' if is_dark else '30'} !important;
+                    }}
+                    </style>
+                    """, unsafe_allow_html=True)
         
                 except Exception as e:
                     st.error(f"Error en predicción: {e}")
@@ -588,7 +611,7 @@ else:
     st.markdown(f"""
     <div style="margin-bottom: 2rem;">
         <h1 style="color: var(--title-color); font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">Análisis Visual Global</h1>
-        <p style="color: #64748B; font-size: 1.1rem; margin-top: 5px;">Exploración del dataset completo de Sabana Occidente</p>
+        <p style="color: #64748B; font-size: 1.1rem; margin-top: 5px;">Exploración del dataset completo de Sabana Occidente - Facatativá, Funza, Madrid y Mosquera</p>
     </div>
     """, unsafe_allow_html=True)
 
