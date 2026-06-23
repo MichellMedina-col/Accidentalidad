@@ -64,12 +64,12 @@ if tema_actual == "Modo Claro":
         --text-color: #002855;
         --title-color: #4A703C;
         --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
-        --glow-bajo-shadow: 0px 4px 12px rgba(16, 185, 129, 0.2);
-        --glow-bajo-border: 1px solid rgba(16, 185, 129, 0.3);
-        --glow-medio-shadow: 0px 4px 12px rgba(245, 158, 11, 0.2);
-        --glow-medio-border: 1px solid rgba(245, 158, 11, 0.3);
-        --glow-alto-shadow: 0px 4px 12px rgba(211, 47, 47, 0.2);
-        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.3);
+        --glow-bajo-shadow: 0px 4px 15px rgba(74, 222, 128, 0.3);
+        --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.4);
+        --glow-medio-shadow: 0px 4px 15px rgba(251, 192, 45, 0.3);
+        --glow-medio-border: 1px solid rgba(251, 192, 45, 0.4);
+        --glow-alto-shadow: 0px 4px 18px rgba(211, 47, 47, 0.35);
+        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.45);
     }
     """
 elif tema_actual == "Modo Oscuro":
@@ -83,12 +83,12 @@ elif tema_actual == "Modo Oscuro":
         --text-color: #F8FAFC;
         --title-color: #F8FAFC;
         --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-        --glow-bajo-shadow: 0px 0px 15px rgba(74, 222, 128, 0.5);
-        --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.7);
-        --glow-medio-shadow: 0px 0px 15px rgba(251, 192, 45, 0.6);
-        --glow-medio-border: 1px solid rgba(251, 192, 45, 0.8);
-        --glow-alto-shadow: 0px 0px 15px rgba(255, 23, 68, 0.6);
-        --glow-alto-border: 1px solid rgba(255, 23, 68, 0.8);
+        --glow-bajo-shadow: 0px 0px 25px #4ADE80;
+        --glow-bajo-border: 2px solid #4ADE80;
+        --glow-medio-shadow: 0px 0px 25px #FBC02D;
+        --glow-medio-border: 2px solid #FBC02D;
+        --glow-alto-shadow: 0px 0px 30px #FF1744;
+        --glow-alto-border: 2px solid #FF1744;
     }
     """
 else:
@@ -102,12 +102,12 @@ else:
         --text-color: #002855;
         --title-color: #4A703C;
         --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
-        --glow-bajo-shadow: 0px 4px 12px rgba(16, 185, 129, 0.2);
-        --glow-bajo-border: 1px solid rgba(16, 185, 129, 0.3);
-        --glow-medio-shadow: 0px 4px 12px rgba(245, 158, 11, 0.2);
-        --glow-medio-border: 1px solid rgba(245, 158, 11, 0.3);
-        --glow-alto-shadow: 0px 4px 12px rgba(211, 47, 47, 0.2);
-        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.3);
+        --glow-bajo-shadow: 0px 4px 15px rgba(74, 222, 128, 0.3);
+        --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.4);
+        --glow-medio-shadow: 0px 4px 15px rgba(251, 192, 45, 0.3);
+        --glow-medio-border: 1px solid rgba(251, 192, 45, 0.4);
+        --glow-alto-shadow: 0px 4px 18px rgba(211, 47, 47, 0.35);
+        --glow-alto-border: 1px solid rgba(211, 47, 47, 0.45);
     }
     @media (prefers-color-scheme: dark) {
         :root {
@@ -119,12 +119,12 @@ else:
             --text-color: #F8FAFC;
             --title-color: #F8FAFC;
             --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
-            --glow-bajo-shadow: 0px 0px 15px rgba(74, 222, 128, 0.5);
-            --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.7);
-            --glow-medio-shadow: 0px 0px 15px rgba(251, 192, 45, 0.6);
-            --glow-medio-border: 1px solid rgba(251, 192, 45, 0.8);
-            --glow-alto-shadow: 0px 0px 15px rgba(255, 23, 68, 0.6);
-            --glow-alto-border: 1px solid rgba(255, 23, 68, 0.8);
+            --glow-bajo-shadow: 0px 0px 25px #4ADE80;
+            --glow-bajo-border: 2px solid #4ADE80;
+            --glow-medio-shadow: 0px 0px 25px #FBC02D;
+            --glow-medio-border: 2px solid #FBC02D;
+            --glow-alto-shadow: 0px 0px 30px #FF1744;
+            --glow-alto-border: 2px solid #FF1744;
         }
     }
     """
@@ -438,7 +438,7 @@ if "Inicio" in pagina:
             
             def limpiar_opciones(col_name):
                 opciones = sorted(df_full[col_name].dropna().unique())
-                return [o for o in opciones if str(o).lower() not in ['no reportado', 'sin informacion', 'sin información']]
+                return [o for o in opciones if str(o).lower() not in ['sin informacion', 'sin información']]
 
             mun_sel = st.selectbox("Municipio", limpiar_opciones(COL_MUN)) if COL_MUN else None
             zon_sel = st.selectbox("Zona del incidente", limpiar_opciones(COL_ZONA)) if COL_ZONA else None
@@ -523,35 +523,35 @@ if "Inicio" in pagina:
         
                     # === LOGICA DE SEMAFORO EXACTA ===
                     if riesgo_pct < 50:
-                        color = "#10b981" # Verde - RIESGO BAJO
+                        color = "#4ADE80" # Verde Neón
                         label = "🟢 RIESGO BAJO - CONTROLADO"
-                        bg = "rgba(16, 185, 129, 0.1)"
+                        bg = "rgba(74, 222, 128, 0.05)"
                         glow_class = "glow-bajo"
                     elif riesgo_pct < 70:
-                        color = "#F59E0B" # Amarillo Vial - RIESGO MEDIO
+                        color = "#FBC02D" # Amarillo Neón
                         label = "🟠 RIESGO MEDIO - PRECAUCIÓN"
-                        bg = "rgba(245, 158, 11, 0.1)"
+                        bg = "rgba(251, 192, 45, 0.05)"
                         glow_class = "glow-medio"
                     else:
-                        color = "#EF4444" # Rojo Alerta - RIESGO ALTO
+                        color = "#FF1744" # Rojo Neón
                         label = "🔴 RIESGO ALTO - CRÍTICO"
-                        bg = "rgba(239, 68, 68, 0.1)"
+                        bg = "rgba(255, 23, 68, 0.05)"
                         glow_class = "glow-alto"
         
                     # Render del resultado
                     st.markdown(f"""
-                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 250px;">
-                        <div style="position: relative; width: 180px; height: 180px;">
+                    <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 250px; width: 100%;">
+                        <div style="position: relative; width: 180px; height: 180px; display: inline-block;">
                             <svg width="180" height="180" viewBox="0 0 220 200" style="position: absolute; top:0; left:0;">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
                                 <circle cx="110" cy="100" r="80" stroke="{color}" stroke-width="12" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 50px;">
-                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; transition: color 0.5s ease;">{riesgo_pct}%</div>
+                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; transition: color 0.5s ease; text-shadow: 0px 0px 10px {color}80;">{riesgo_pct}%</div>
                             </div>
                         </div>
-                        <div class="{glow_class}" style="background: {bg}; border-radius: 8px; padding: 12px 20px; width: 100%; margin-top: 20px; text-align: center; transition: all 0.5s ease;">
-                            <div style="font-size: 1.1rem; font-weight: 800; color: {color}; letter-spacing: 0.05em;">{label}</div>
+                        <div class="{glow_class}" style="background: {bg}; border-radius: 8px; padding: 12px 20px; width: 100%; display: block; margin-top: 20px; text-align: center; transition: all 0.5s ease;">
+                            <div style="font-size: 1.1rem; font-weight: 800; color: {color}; letter-spacing: 0.05em; text-shadow: 0px 0px 5px {color}40;">{label}</div>
                             <div style="font-size: 0.8rem; color: var(--text-color); opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
                         </div>
                     </div>
