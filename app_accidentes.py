@@ -568,11 +568,11 @@ if "Inicio" in pagina:
                     # 1. Lógica del Semáforo de Riesgo (color del aro y líneas cambia según el riesgo)
                     if riesgo_pct < 50:
                         color = "#4ADE80"
-                        color_riesgo = "#00D2FF"  # Azul Celeste (Riesgo Bajo)
+                        color_riesgo = "#4ADE80"  # Verde Neón (Riesgo Bajo)
                         label = "🟢 RIESGO BAJO - CONTROLADO"
-                        bg = "rgba(0, 210, 255, 0.08)"
-                        glow_shadow = "0px 0px 25px #00D2FF"
-                        glow_border = "2px solid #00D2FF"
+                        bg = "rgba(74, 222, 128, 0.08)"
+                        glow_shadow = "0px 0px 25px #4ADE80"
+                        glow_border = "2px solid #4ADE80"
                     elif riesgo_pct < 70:
                         color = "#FBC02D"
                         color_riesgo = "#FBC02D"  # Amarillo/Naranja (Riesgo Medio)
