@@ -5,22 +5,22 @@
     function aplicarEstiloNeon(colorNeon, isDark) {
         const parentDoc = window.parent.document;
         
-        // 1. Buscar todas las tarjetas (contenedores con borde de Streamlit)
+        // Buscar todas las tarjetas (contenedores con borde de Streamlit)
         const tarjetas = parentDoc.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
         
         tarjetas.forEach(tarjeta => {
-            // Aplicar estilo de línea inferior neón (fondo oscuro plano + línea gruesa abajo)
-            tarjeta.style.backgroundColor = 'rgba(14, 17, 23, 0.85)';
-            tarjeta.style.border = 'none';
-            tarjeta.style.borderBottom = `4px solid ${colorNeon}`;
-            tarjeta.style.borderRadius = '8px';
-            tarjeta.style.boxShadow = `0px 8px 20px -6px ${colorNeon}80`;
-            tarjeta.style.marginBottom = '15px';
+            // Aplicar estilo de línea inferior neón con !important para forzar a Streamlit
+            tarjeta.style.setProperty('background-color', 'rgba(14, 17, 23, 0.85)', 'important');
+            tarjeta.style.setProperty('border', 'none', 'important');
+            tarjeta.style.setProperty('border-bottom', `4px solid ${colorNeon}`, 'important');
+            tarjeta.style.setProperty('border-radius', '8px', 'important');
+            tarjeta.style.setProperty('box-shadow', `0px 8px 20px -6px ${colorNeon}`, 'important');
+            tarjeta.style.setProperty('margin-bottom', '15px', 'important');
             
             // Forzar el texto blanco DENTRO de cada tarjeta
             const textos = tarjeta.querySelectorAll('h1, h2, h3, p, label, div[data-baseweb="select"] div');
             textos.forEach(t => {
-                t.style.color = '#FFFFFF';
+                t.style.setProperty('color', '#FFFFFF', 'important');
             });
         });
     }

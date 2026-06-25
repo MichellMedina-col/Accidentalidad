@@ -242,17 +242,17 @@ st.markdown(f"""
     }}
 
     /* Cajas Independientes (Contenedores) - Línea inferior neón */
-    div[data-testid="stVerticalBlockBorderWrapper"] {{
+    div[data-testid="stVerticalBlockBorderWrapper"], div[data-testid="stVerticalBlock"] > div {{
         background-color: rgba(14, 17, 23, 0.85) !important;
         border: none !important;
         border-bottom: 4px solid {risk_color} !important;
         border-radius: 8px !important;
-        box-shadow: 0px 8px 20px -6px {risk_color}80 !important;
+        box-shadow: 0px 8px 20px -6px {risk_color} !important;
         padding: 1.5rem !important;
         transition: all 0.5s ease;
         margin-bottom: 15px !important;
     }}
-    div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover, div[data-testid="stVerticalBlock"] > div:hover {{
         transform: translateY(-2px);
     }}
 
@@ -614,6 +614,17 @@ if "Inicio" in pagina:
 
                     # Guardar color de riesgo en session_state para glow global
                     st.session_state.risk_color = color_riesgo
+
+                    # Inyectar CSS dinámico del color de riesgo para los contenedores (además de JS)
+                    css_cajones_dinamico = f"""
+                    <style>
+                        div[data-testid="stVerticalBlockBorderWrapper"], div[data-testid="stVerticalBlock"] > div {{
+                            border-bottom: 4px solid {color_riesgo} !important;
+                            box-shadow: 0px 8px 20px -6px {color_riesgo} !important;
+                        }}
+                    </style>
+                    """
+                    st.markdown(css_cajones_dinamico, unsafe_allow_html=True)
 
                     # 2. Inyectar JS override para el efecto neón dinámico
                     try:
