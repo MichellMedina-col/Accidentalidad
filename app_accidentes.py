@@ -241,22 +241,34 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* Cajas Independientes (Contenedores) - Glow Global Sincronizado */
+    /* Cajas Independientes (Contenedores) - Línea inferior neón */
     div[data-testid="stVerticalBlockBorderWrapper"] {{
-        background-color: var(--card-bg) !important;
-        border: 1px solid var(--card-border) !important;
-        border-radius: 12px !important;
-        box-shadow: var(--card-shadow) !important;
+        background-color: rgba(14, 17, 23, 0.85) !important;
+        border: none !important;
+        border-bottom: 4px solid {risk_color} !important;
+        border-radius: 8px !important;
+        box-shadow: 0px 8px 20px -6px {risk_color}80 !important;
         padding: 1.5rem !important;
         transition: all 0.5s ease;
+        margin-bottom: 15px !important;
     }}
     div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
         transform: translateY(-2px);
     }}
 
+    /* Forzar color de texto blanco para legibilidad */
+    [data-testid="stAppViewContainer"] h1,
+    [data-testid="stAppViewContainer"] h2,
+    [data-testid="stAppViewContainer"] h3,
+    [data-testid="stAppViewContainer"] p,
+    [data-testid="stWidgetLabel"] p,
+    div[data-baseweb="select"] div {{
+        color: #FFFFFF !important;
+    }}
+
     /* Títulos de los bloques */
     .block-title {{
-        color: var(--title-color) !important;
+        color: #FFFFFF !important;
         font-size: 1.15rem !important;
         font-weight: 800 !important;
         margin-bottom: 1rem !important;
@@ -265,34 +277,35 @@ st.markdown(f"""
         letter-spacing: 0.05em;
     }}
 
-    /* Efectos Glow Dinámicos */
-    .glow-bajo {{
-        box-shadow: var(--glow-bajo-shadow) !important;
-        border: var(--glow-bajo-border) !important;
-    }}
-    .glow-medio {{
-        box-shadow: var(--glow-medio-shadow) !important;
-        border: var(--glow-medio-border) !important;
-    }}
-    .glow-alto {{
-        box-shadow: var(--glow-alto-shadow) !important;
-        border: var(--glow-alto-border) !important;
-    }}
-
     /* KPIs */
     .kpi-value {{
         font-size: 2rem;
         font-weight: 800;
-        color: var(--text-color);
+        color: #FFFFFF;
         line-height: 1.2;
     }}
     .kpi-label {{
         font-size: 0.8rem;
         font-weight: 600;
-        color: #64748B;
+        color: #94A3B8;
         text-transform: uppercase;
         letter-spacing: 0.05em;
         margin-bottom: 4px;
+    }}
+
+    /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
+    div[data-testid="stSlider"] [role="slider"] {{
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    div[data-testid="stSlider"] [role="slider"]::before {{
+        content: "📍" !important;
+        font-size: 22px !important;
+        display: block;
+        position: absolute;
+        top: -10px;
+        left: -6px;
     }}
 
     /* Scrollbar */
@@ -428,8 +441,6 @@ if "Inicio" in pagina:
     kpi_actor = df_full[COL_ACTOR].mode()[0] if COL_ACTOR else "N/D"
 
     with st.container(border=True):
-        clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
-        st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
         st.markdown('<div class="block-title">Resumen Estadístico Global</div>', unsafe_allow_html=True)
         col1, col2, col3, col4 = st.columns(4)
         
@@ -463,8 +474,6 @@ if "Inicio" in pagina:
     
     with p1:
         with st.container(border=True):
-            clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
-            st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
             edad = st.slider("Edad del actor vial", 0, 100, 30)
             
@@ -479,8 +488,6 @@ if "Inicio" in pagina:
     
     with p2:
         with st.container(border=True):
-            clase_neon = "tarjeta-neon-oscuro" if tema_actual == "Modo Oscuro" else "tarjeta-neon-claro"
-            st.markdown(f'<div class="{clase_neon}"></div>', unsafe_allow_html=True)
             st.markdown('<div class="block-title">🔮 Predicción de Riesgo</div>', unsafe_allow_html=True)
             
             if modelo is not None:
@@ -558,79 +565,62 @@ if "Inicio" in pagina:
                     # === LOGICA DE SEMAFORO CON GLOW INLINE ===
                     is_dark = tema_actual == "Modo Oscuro"
                     
+                    # 1. Lógica del Semáforo de Riesgo (color del aro y líneas cambia según el riesgo)
                     if riesgo_pct < 50:
                         color = "#4ADE80"
+                        color_riesgo = "#00D2FF"  # Azul Celeste (Riesgo Bajo)
                         label = "🟢 RIESGO BAJO - CONTROLADO"
-                        bg = "rgba(74, 222, 128, 0.08)"
-                        if is_dark:
-                            glow_shadow = "0px 0px 25px #4ADE80"
-                            glow_border = "2px solid #4ADE80"
-                        else:
-                            glow_shadow = "0px 4px 15px rgba(74, 222, 128, 0.3)"
-                            glow_border = "1px solid rgba(74, 222, 128, 0.4)"
+                        bg = "rgba(0, 210, 255, 0.08)"
+                        glow_shadow = "0px 0px 25px #00D2FF"
+                        glow_border = "2px solid #00D2FF"
                     elif riesgo_pct < 70:
                         color = "#FBC02D"
+                        color_riesgo = "#FBC02D"  # Amarillo/Naranja (Riesgo Medio)
                         label = "🟠 RIESGO MEDIO - PRECAUCIÓN"
                         bg = "rgba(251, 192, 45, 0.08)"
-                        if is_dark:
-                            glow_shadow = "0px 0px 25px #FBC02D"
-                            glow_border = "2px solid #FBC02D"
-                        else:
-                            glow_shadow = "0px 4px 15px rgba(251, 192, 45, 0.3)"
-                            glow_border = "1px solid rgba(251, 192, 45, 0.4)"
+                        glow_shadow = "0px 0px 25px #FBC02D"
+                        glow_border = "2px solid #FBC02D"
                     else:
                         color = "#FF1744"
+                        color_riesgo = "#FF1744"  # Rojo Neón (Riesgo Alto)
                         label = "🔴 RIESGO ALTO - CRÍTICO"
                         bg = "rgba(255, 23, 68, 0.08)"
-                        if is_dark:
-                            glow_shadow = "0px 0px 30px #FF1744"
-                            glow_border = "2px solid #FF1744"
-                        else:
-                            glow_shadow = "0px 4px 18px rgba(211, 47, 47, 0.35)"
-                            glow_border = "1px solid rgba(211, 47, 47, 0.45)"
+                        glow_shadow = "0px 0px 30px #FF1744"
+                        glow_border = "2px solid #FF1744"
         
-                    # Render del resultado con estilos INLINE (sin depender de clases CSS)
+                    # Render del resultado con estilos INLINE
                     import math
-                    angle_rad = math.radians(150 + 240 * (riesgo_pct / 100))
-                    pin_x = 110 + 80 * math.cos(angle_rad)
-                    pin_y = 100 + 80 * math.sin(angle_rad)
 
-                    # 1. Mantener la paleta de colores adaptativa en AZULES según el riesgo para el glow
-                    if riesgo_pct < 50:
-                        color_neon = "#00D2FF"  # Azul Celeste / Cyan brillante
-                    elif riesgo_pct < 70:
-                        color_neon = "#0078FF"  # Azul Eléctrico
-                    else:
-                        color_neon = "#7000FF"  # Azul Neón Profundo
+                    # Usar color_riesgo como color del arco (dinámico)
+                    color_neon = color_riesgo
 
                     st.markdown(f"""
                     <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; width: 100%;">
                         <div style="position: relative; width: 220px; height: 200px; display: inline-block;">
-                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color_neon}80);">
+                            <svg width="220" height="200" viewBox="0 0 220 200" style="position: absolute; top:0; left:0; filter: drop-shadow(0px 0px 8px {color_riesgo}80);">
                                 <circle cx="110" cy="100" r="80" stroke="rgba(150,150,150,0.2)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px;" />
-                                <circle cx="110" cy="100" r="80" stroke="{color_neon}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color_neon}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
+                                <circle cx="110" cy="100" r="80" stroke="{color_riesgo}" stroke-width="14" fill="transparent" stroke-dasharray="{335 * (riesgo_pct/100)} 503" stroke-linecap="round" style="transform: rotate(150deg); transform-origin: 110px 100px; filter: drop-shadow(0px 0px 6px {color_riesgo}); transition: stroke-dasharray 0.5s ease-in-out, stroke 0.5s ease;" />
                             </svg>
-                            <div style="position: absolute; left: {pin_x - 12}px; top: {pin_y - 24}px; font-size: 24px; line-height: 1; text-shadow: 0px 0px 8px {color_neon}; transition: all 0.5s ease;">📍</div>
                             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; padding-top: 20px;">
-                                <div style="font-size: 2.5rem; font-weight: 800; color: {color}; line-height: 1; text-shadow: 0px 0px 15px {color};">{riesgo_pct}%</div>
+                                <div style="font-size: 2.5rem; font-weight: 800; color: {color_riesgo}; line-height: 1; text-shadow: 0px 0px 15px {color_riesgo};">{riesgo_pct}%</div>
                             </div>
                         </div>
                         <div style="background: {bg}; box-shadow: {glow_shadow}; border: {glow_border}; border-radius: 10px; padding: 14px 24px; width: 100%; display: block; margin-top: 20px; text-align: center;">
-                            <div style="font-size: 1.15rem; font-weight: 800; color: {color}; letter-spacing: 0.05em; text-shadow: 0px 0px 8px {color}80;">{label}</div>
-                            <div style="font-size: 0.8rem; color: {'#F8FAFC' if is_dark else '#002855'}; opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
+                            <div style="font-size: 1.15rem; font-weight: 800; color: {color_riesgo}; letter-spacing: 0.05em; text-shadow: 0px 0px 8px {color_riesgo}80;">{label}</div>
+                            <div style="font-size: 0.8rem; color: #F8FAFC; opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
 
                     # Guardar color de riesgo en session_state para glow global
-                    st.session_state.risk_color = color
+                    st.session_state.risk_color = color_riesgo
 
-                    # 2. Inyectar JS override para el efecto neón azul sin romper el CSS de Streamlit
+                    # 2. Inyectar JS override para el efecto neón dinámico
                     try:
                         with open("neon_script.html", "r", encoding="utf-8") as f:
                             js_code = f.read()
                         
-                        js_code = js_code.replace("COLOR_PLACEHOLDER", color_neon)
+                        js_code = js_code.replace("COLOR_PLACEHOLDER", color_riesgo)
                         js_code = js_code.replace("THEME_PLACEHOLDER", "true" if is_dark else "false")
                         
                         components.html(js_code, height=0, width=0)
