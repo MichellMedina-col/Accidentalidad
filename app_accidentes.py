@@ -22,7 +22,7 @@ warnings.filterwarnings('ignore')
 # ─── CONFIGURACIÓN ────────────────────────────────────────────
 st.set_page_config(
     page_title="Seguridad Vial · Sabana Occidente",
-    page_icon="🛣️",
+    page_icon="🚦",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -361,7 +361,7 @@ st.markdown(f"""
         }}
     }}
 
-    /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
+    /* Ocultar el botón verde nativo del slider y poner el Pin 📍 */
     div[data-testid="stSlider"] [role="slider"] {{
         background: transparent !important;
         border: none !important;
@@ -372,7 +372,7 @@ st.markdown(f"""
         font-size: 22px !important;
         display: block;
         position: absolute;
-        top: -10px;
+        top: -12px;
         left: -6px;
     }}
 
@@ -479,7 +479,7 @@ with st.sidebar:
                         background: linear-gradient(135deg, #4f8cf7, #7c6df0);
                         display: flex; align-items: center; justify-content: center;
                         font-size: 20px; flex-shrink: 0; color: white;">
-                🚦
+                🛣️
             </div>
             <div>
                 <div style="font-weight: 800; font-size: 18px; color: var(--text-color);">VialAnalytics</div>
