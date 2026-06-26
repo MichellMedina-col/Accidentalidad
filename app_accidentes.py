@@ -555,18 +555,39 @@ if opcion == "Inicio - Predictor":
             edad = st.slider("Edad del actor vial", 0, 100, 30)
             css_slider_pin = """
 <style>
+    /* Ocultar el thumb nativo del slider completamente */
     div[data-testid="stSlider"] [role="slider"] {
         background: transparent !important;
         border: none !important;
         box-shadow: none !important;
+        width: 2px !important;
+        height: 2px !important;
+        opacity: 0 !important;
     }
     div[data-testid="stSlider"] [role="slider"]::before {
         content: "📍" !important;
-        font-size: 22px !important;
+        font-size: 24px !important;
         display: block;
         position: absolute;
-        top: -12px;
-        left: -6px;
+        top: -18px;
+        left: -11px;
+        opacity: 1 !important;
+        filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.45));
+        z-index: 10;
+        pointer-events: none;
+    }
+    /* Ocultar el thumb circular de webkit y moz */
+    div[data-testid="stSlider"] input[type="range"]::-webkit-slider-thumb {
+        -webkit-appearance: none !important;
+        appearance: none !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stSlider"] input[type="range"]::-moz-range-thumb {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
     }
 </style>
 """
