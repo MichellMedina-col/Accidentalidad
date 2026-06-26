@@ -509,6 +509,116 @@
             color: var(--text-primary);
             transition: color 0.3s ease;
         }
+
+        /* ===== Botones de pestaña integrados en la nav ===== */
+        .html-tab-button {
+            background: transparent;
+            color: var(--text-secondary);
+            border: none;
+            padding: 8px 14px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            position: relative;
+        }
+        .html-tab-button::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 2px;
+            background: var(--primary-color);
+            border-radius: 1px;
+            transition: width 0.3s ease;
+        }
+        .html-tab-button:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+        .html-tab-button.active {
+            color: var(--primary-color);
+            background: rgba(0, 210, 255, 0.08);
+        }
+        .html-tab-button.active::after {
+            width: 70%;
+        }
+        html:not(.dark) .html-tab-button.active {
+            background: rgba(93, 173, 226, 0.08);
+        }
+        .html-tab-content {
+            display: none;
+        }
+        .html-tab-content.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        /* Separador visual entre nav-links y tab-buttons */
+        .nav-separator {
+            width: 1px;
+            height: 20px;
+            background: var(--border-color);
+            margin: 0 4px;
+        }
+
+        /* ===== Pie de página institucional ===== */
+        .footer-sena {
+            text-align: center;
+            margin-top: 50px;
+            padding: 30px 1rem;
+            border-top: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        .footer-sena img {
+            width: 55px;
+            height: 55px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,0.2));
+        }
+        .footer-sena h5 {
+            color: var(--text-primary);
+            margin: 5px 0;
+            font-size: 15px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+        }
+        .footer-sena .footer-subtitle {
+            color: var(--primary-color);
+            font-size: 12px;
+            margin: 0 0 18px 0;
+            letter-spacing: 0.5px;
+        }
+        .footer-integrantes {
+            font-size: 13px;
+            color: var(--text-secondary);
+            line-height: 1.8;
+            margin-top: 10px;
+        }
+        .footer-integrantes strong {
+            color: var(--primary-color);
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .footer-copy {
+            margin-top: 18px;
+            font-size: 11px;
+            color: var(--text-secondary);
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body>
@@ -520,8 +630,9 @@
                 <span>Seguridad Vial</span>
             </a>
             <div class="nav-links">
-                <a href="#inicio">Inicio</a>
-                <a href="#analisis">Análisis</a>
+                <button class="html-tab-button active" onclick="switchTab(event, 'pestana-inicio')">🏠 Inicio</button>
+                <button class="html-tab-button" onclick="switchTab(event, 'pestana-analisis')">📊 Análisis</button>
+                <div class="nav-separator"></div>
                 <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
                     <span id="theme-icon">🌙</span>
                 </button>
@@ -532,12 +643,17 @@
     <!-- Hero Section -->
     <section class="hero">
         <h1>Análisis de la Accidentalidad Vial</h1>
-        <p>📍 Sabana Occidente (2021-2026)</p>
-        <p style="font-size: 0.95rem; margin-top: 1rem;">Conocer los riesgos hoy para prevenir los accidentes de mañana</p>
+        <p>📍 Sabana Occidente (2021-2026) · Facatativá, Funza, Madrid y Mosquera</p>
+        <p style="font-size: 0.95rem; margin-top: 0.75rem; font-style: italic;">Conocer los riesgos hoy para prevenir los accidentes de mañana</p>
     </section>
 
     <!-- Main Content -->
     <div class="container">
+
+        <!-- ============================================ -->
+        <!-- 1. PESTAÑA INICIO: Resumen + Predictor -->
+        <!-- ============================================ -->
+        <div id="pestana-inicio" class="html-tab-content active">
         <!-- Statistics -->
         <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">📊 Resumen Estadístico Global</h2>
         <div class="stats">
@@ -567,20 +683,7 @@
             </div>
         </div>
 
-        <!-- Charts Section -->
-        <h2 style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem;">📈 Análisis Visual Completo</h2>
-        <div class="charts-grid">
-            <div class="chart-card"><h3>🏘️ Accidentes por Municipio</h3><canvas id="chart-municipio"></canvas></div>
-            <div class="chart-card"><h3>📅 Accidentes por Mes</h3><canvas id="chart-meses"></canvas></div>
-            <div class="chart-card"><h3>⚡ Distribución por Tipo de Evento</h3><canvas id="chart-eventos"></canvas></div>
-            <div class="chart-card"><h3>👥 Distribución por Género</h3><canvas id="chart-genero"></canvas></div>
-            <div class="chart-card"><h3>🎂 Distribución de Edades</h3><canvas id="chart-edades"></canvas></div>
-            <div class="chart-card"><h3>🚗 Tipo de Actor Vial</h3><canvas id="chart-actor"></canvas></div>
-            <div class="chart-card"><h3>🗺️ Distribución por Zona</h3><canvas id="chart-zona"></canvas></div>
-            <div class="chart-card"><h3>🔥 Mapa de Calor: Municipio vs Evento</h3><canvas id="chart-heatmap"></canvas></div>
-        </div>
 
-        <!-- Predictor -->
         <h2 style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem;">🔮 Predictor de Riesgo</h2>
         <div class="predictor">
             <!-- Input Parameters -->
@@ -648,13 +751,40 @@
                 </div>
             </div>
         </div>
+        </div><!-- Fin pestaña Inicio -->
+
+        <!-- ============================================ -->
+        <!-- 2. PESTAÑA ANÁLISIS VISUAL: Gráficas -->
+        <!-- ============================================ -->
+        <div id="pestana-analisis" class="html-tab-content">
+        <!-- Charts Section -->
+        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">📈 Análisis Visual Completo</h2>
+        <div class="charts-grid">
+            <div class="chart-card"><h3>🏘️ Accidentes por Municipio</h3><canvas id="chart-municipio"></canvas></div>
+            <div class="chart-card"><h3>📅 Accidentes por Mes</h3><canvas id="chart-meses"></canvas></div>
+            <div class="chart-card"><h3>⚡ Distribución por Tipo de Evento</h3><canvas id="chart-eventos"></canvas></div>
+            <div class="chart-card"><h3>👥 Distribución por Género</h3><canvas id="chart-genero"></canvas></div>
+            <div class="chart-card"><h3>🎂 Distribución de Edades</h3><canvas id="chart-edades"></canvas></div>
+            <div class="chart-card"><h3>🚗 Tipo de Actor Vial</h3><canvas id="chart-actor"></canvas></div>
+            <div class="chart-card"><h3>🗺️ Distribución por Zona</h3><canvas id="chart-zona"></canvas></div>
+            <div class="chart-card"><h3>🔥 Mapa de Calor: Municipio vs Evento</h3><canvas id="chart-heatmap"></canvas></div>
+        </div>
+        </div><!-- Fin pestaña Análisis -->
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2026 Seguridad Vial · Sabana Occidente | Análisis de Accidentalidad Vial</p>
-        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Datos 2021-2026 | Facatativá · Funza · Madrid · Mosquera</p>
-    </footer>
+    <!-- Pie de Página Institucional SENA -->
+    <div class="footer-sena">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg" alt="Logo SENA">
+        <h5>Proyecto SENA 2026</h5>
+        <p class="footer-subtitle">Análisis de Accidentalidad Vial · Sabana Occidente (2021-2026)</p>
+        <div class="footer-integrantes">
+            <strong>Integrantes del Proyecto:</strong><br>
+            MARIA ASUCENA NARANJO TORRES<br>
+            ZULY STEFANIA AGUILLON PINILLA<br>
+            MICHELL DAYAN MEDINA ARANGO
+        </div>
+        <p class="footer-copy">&copy; 2026 · Datos 2021-2026 | Facatativá · Funza · Madrid · Mosquera</p>
+    </div>
 
     <script>
         // Theme Toggle
@@ -800,6 +930,40 @@
         updateSlider();
         updateRisk();
         setTimeout(renderCharts, 100);
+
+        // ===== Tab Switching =====
+        function switchTab(evt, tabId) {
+            // Hide all tab content
+            var tabcontent = document.getElementsByClassName('html-tab-content');
+            for (var i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].classList.remove('active');
+            }
+            // Deactivate all tab buttons
+            var tablinks = document.getElementsByClassName('html-tab-button');
+            for (var i = 0; i < tablinks.length; i++) {
+                tablinks[i].classList.remove('active');
+            }
+            // Show selected tab
+            document.getElementById(tabId).classList.add('active');
+            // Activate the clicked button (if it's a tab button)
+            if (evt && evt.currentTarget && evt.currentTarget.classList.contains('html-tab-button')) {
+                evt.currentTarget.classList.add('active');
+            } else {
+                // If called from nav links, activate the corresponding tab button
+                for (var i = 0; i < tablinks.length; i++) {
+                    var btnTarget = tablinks[i].getAttribute('onclick');
+                    if (btnTarget && btnTarget.indexOf(tabId) !== -1) {
+                        tablinks[i].classList.add('active');
+                    }
+                }
+            }
+            // Re-render charts when switching to analysis tab so they size correctly
+            if (tabId === 'pestana-analisis') {
+                setTimeout(renderCharts, 50);
+            }
+            // Scroll to top of container
+            document.querySelector('.container').scrollIntoView({ behavior: 'smooth' });
+        }
     </script>
 </body>
 </html>
