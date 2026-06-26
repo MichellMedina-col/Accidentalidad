@@ -189,11 +189,28 @@ st.markdown(f"""
     /* Corrección de Inputs para contraste claro/oscuro (Filtros) */
     div[data-baseweb="select"] > div {{
         background-color: var(--card-bg) !important;
-        color: #002855 !important;
+        color: var(--text-color) !important;
         border-color: var(--card-border) !important;
     }}
     div[data-baseweb="select"] > div span {{
-        color: #002855 !important;
+        color: var(--text-color) !important;
+    }}
+    div[data-baseweb="popover"] ul {{
+        background-color: var(--card-bg) !important;
+        color: var(--text-color) !important;
+    }}
+    div[data-baseweb="popover"] li {{
+        color: var(--text-color) !important;
+    }}
+
+    /* Forzar visibilidad y color adecuado en el panel principal */
+    [data-testid="stMain"] h1,
+    [data-testid="stMain"] h2,
+    [data-testid="stMain"] h3,
+    [data-testid="stMain"] p,
+    [data-testid="stMain"] label,
+    [data-testid="stMain"] span {{
+        color: var(--text-color) !important;
     }}
 
     /* Burbuja SENA inferior en Sidebar limpia y sutil */
