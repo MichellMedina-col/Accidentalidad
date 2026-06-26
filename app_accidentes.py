@@ -380,8 +380,8 @@ def plotly_layout(fig):
         margin=dict(l=8, r=8, t=40, b=8),
         hoverlabel=dict(bgcolor="rgba(30,41,59,0.9)", font=dict(color="#ffffff", size=12))
     )
-    fig.update_xaxes(showgrid=True, gridcolor=plotly_grid_color, tickfont=dict(color=plotly_text_color), titlefont=dict(color=plotly_text_color))
-    fig.update_yaxes(showgrid=True, gridcolor=plotly_grid_color, tickfont=dict(color=plotly_text_color), titlefont=dict(color=plotly_text_color))
+    fig.update_xaxes(showgrid=True, gridcolor=plotly_grid_color)
+    fig.update_yaxes(showgrid=True, gridcolor=plotly_grid_color)
     return fig
 
 # ─── CARGA DE DATOS ───────────────────────────────────────────
