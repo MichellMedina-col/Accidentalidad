@@ -1,8 +1,11 @@
 import streamlit as st
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
+try:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+except Exception as e:
+    st.warning(f"Matplotlib/Seaborn could not be loaded: {e}. Some visualizations may be unavailable.")
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.preprocessing import LabelEncoder
 import xgboost as xgb
@@ -19,7 +22,7 @@ warnings.filterwarnings('ignore')
 # ─── CONFIGURACIÓN ────────────────────────────────────────────
 st.set_page_config(
     page_title="Seguridad Vial · Sabana Occidente",
-    page_icon="🚦",
+    page_icon="🛣️",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -302,11 +305,11 @@ st.markdown(f"""
         box-sizing: border-box !important;
     }}
     
-    /* 1. COLOR FIJO PARA EL TÍTULO (Gris Plomo Elegante - No cambia) */
+    /* 1. COLOR FIJO PARA EL TÍTULO (Cyan Vibrante - Visible en ambos temas) */
     [data-testid="stMain"] .tarjeta-resumen h4,
     div.tarjeta-resumen h4 {{
-        color: #64748B !important; 
-        font-size: 12px !important; /* Ajustado para celular */
+        color: #00B4D8 !important; 
+        font-size: 12px !important;
         text-transform: uppercase !important;
         letter-spacing: 0.5px !important;
         margin-bottom: 5px !important;
@@ -316,19 +319,20 @@ st.markdown(f"""
         gap: 6px !important;
     }}
     
-    /* 2. COLOR FIJO PARA EL DATO PRINCIPAL (Blanco Puro - No cambia) */
+    /* 2. COLOR FIJO PARA EL DATO PRINCIPAL (Cyan Neón - Visible siempre) */
     [data-testid="stMain"] .tarjeta-resumen h2,
     div.tarjeta-resumen h2 {{
-        color: #FFFFFF !important; 
-        font-size: 24px !important; /* Un poco más pequeño para evitar desbordes */
+        color: #00D2FF !important; 
+        font-size: 24px !important;
         font-weight: bold !important;
         margin: 0 !important;
+        text-shadow: 0 0 8px rgba(0, 210, 255, 0.3) !important;
     }}
     
-    /* 3. COLOR FIJO PARA EL SUBTÍTULO / TEXTO DESCRIPTIVO (Azul Cyan de la marca - No cambia) */
+    /* 3. COLOR FIJO PARA EL SUBTÍTULO / TEXTO DESCRIPTIVO (Gris Neutro - Visible siempre) */
     [data-testid="stMain"] .tarjeta-resumen p,
     div.tarjeta-resumen p {{
-        color: #00D2FF !important; 
+        color: #94A3B8 !important; 
         font-size: 11px !important;
         margin-top: 5px !important;
         margin-bottom: 0 !important;
@@ -342,7 +346,7 @@ st.markdown(f"""
     }}
 
     /* REGLAS ESPECÍFICAS PARA CELULARES (Pantallas menores a 768px) */
-    @media (max-width: 768px) {
+    @media (max-width: 768px) {{
         /* Forzar a Streamlit a que muestre las columnas de forma limpia y ordenada */
         [data-testid="stMain"] div[data-testid="column"] {{
             width: 100% !important;
@@ -355,7 +359,7 @@ st.markdown(f"""
         div.tarjeta-resumen h2 {{
             font-size: 22px !important; /* Optimiza el tamaño en celulares */
         }}
-    }
+    }}
 
     /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
     div[data-testid="stSlider"] [role="slider"] {{
@@ -378,6 +382,26 @@ st.markdown(f"""
     ::-webkit-scrollbar-thumb {{ background: rgba(150,150,150,0.3); border-radius: 3px; }}
 </style>
 """, unsafe_allow_html=True)
+
+# ─── INYECCIÓN DEL SCRIPT NEÓN (EXTRAE SOLO EL SCRIPT) ────────
+# neon_script.html contiene la app standalone completa + el script neón.
+# Aquí extraemos SOLO el <script id="neon-streamlit">...</script>
+# para inyectarlo en Streamlit sin romper la interfaz.
+import re
+try:
+    neon_html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "neon_script.html")
+    if os.path.exists(neon_html_path):
+        with open(neon_html_path, "r", encoding="utf-8") as f:
+            neon_raw = f.read()
+        # Extraer solo el script con id="neon-streamlit"
+        match = re.search(r'(<script id="neon-streamlit">.*?</script>)', neon_raw, re.DOTALL)
+        if match:
+            neon_script = match.group(1)
+            neon_script = neon_script.replace("COLOR_PLACEHOLDER", risk_color)
+            neon_script = neon_script.replace("THEME_PLACEHOLDER", "true" if tema_actual == "Modo Oscuro" else "false")
+            st.markdown(neon_script, unsafe_allow_html=True)
+except Exception:
+    pass  # Silencioso: el script neón es cosmético, no crítico
 
 
 def plotly_layout(fig):
@@ -477,26 +501,23 @@ with st.sidebar:
     # Selector de tema manual integrado estéticamente antes de los créditos
     st.selectbox("🌓 Tema Visual", ["Automático", "Modo Claro", "Modo Oscuro"], key='tema')
     
+    # Logo oficial del SENA
+    st.markdown("""
+    <div style="display: flex; justify-content: center; margin-bottom: 8px;">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg" 
+             alt="Logo SENA" width="90" 
+             style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); transition: transform 0.3s ease;"
+             onmouseover="this.style.transform='scale(1.08)'" 
+             onmouseout="this.style.transform='scale(1)'">
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("""
     <div class="sena-bubble">
-        <div style="font-size: 18px; margin-bottom: 5px;">📘</div>
         <div style="font-size: 13px; font-weight: 700;">Proyecto SENA 2026</div>
         <div style="font-size: 11px; opacity: 0.7;">Análisis de Accidentalidad Vial</div>
     </div>
     """, unsafe_allow_html=True)
-
-    # Código QR para acceso rápido desde el celular
-    st.markdown("---")
-    url_app = "https://accidentalidad-sabana.streamlit.app"
-    qr_api_url = f"https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl={url_app}"
-    
-    st.markdown("""
-    <div style="text-align: center; margin-bottom: 5px;">
-        <div style="font-size: 13px; font-weight: 700; color: var(--sidebar-text);">📱 ¡Escanea y navega!</div>
-        <div style="font-size: 10px; opacity: 0.7; color: var(--sidebar-text); margin-bottom: 5px;">Accede a la app desde tu celular</div>
-    </div>
-    """, unsafe_allow_html=True)
-    st.image(qr_api_url, use_container_width=True)
 
 
 # ════════════════════════════════════════════════════════════════
@@ -506,8 +527,8 @@ if "Inicio" in pagina:
     # ── BANNER PRINCIPAL ───────────────────────────────────────
     st.markdown(f"""
     <div class="banner-container">
-        <h1 class="banner-title">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</h1>
-        <p class="banner-subtitle">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
+        <h1 class="banner-title" style="color: #ffffff !important; font-size: 2.5rem !important; font-weight: 800 !important; margin-bottom: 1rem !important; text-shadow: 2px 2px 8px rgba(0,0,0,0.8) !important; line-height: 1.2 !important; text-align: center !important;">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</h1>
+        <p class="banner-subtitle" style="color: #F59E0B !important; font-size: 1.3rem !important; font-weight: 700 !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.9) !important; margin: 0 !important; text-align: center !important;">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
     </div>
     """, unsafe_allow_html=True)
 

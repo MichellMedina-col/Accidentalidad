@@ -1,48 +1,437 @@
-<script>
-    // Este script se ejecuta dentro de un iframe de Streamlit.
-    // Para acceder a los elementos reales de la aplicación, debemos subir al DOM del padre (window.parent.document)
-    
-    function aplicarEstiloNeon(colorNeon, isDark) {
-        const parentDoc = window.parent.document;
-        
-        // Buscar todas las tarjetas (contenedores con borde de Streamlit)
-        const tarjetas = parentDoc.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
-        
-        tarjetas.forEach(tarjeta => {
-            // Aplicar estilo de línea inferior neón con !important para forzar a Streamlit
-            tarjeta.style.setProperty('background-color', 'rgba(14, 17, 23, 0.85)', 'important');
-            tarjeta.style.setProperty('border', 'none', 'important');
-            tarjeta.style.setProperty('border-bottom', `4px solid ${colorNeon}`, 'important');
-            tarjeta.style.setProperty('border-radius', '8px', 'important');
-            tarjeta.style.setProperty('box-shadow', `0px 8px 20px -6px ${colorNeon}`, 'important');
-            tarjeta.style.setProperty('margin-bottom', '15px', 'important');
-            
-            // Forzar el texto blanco DENTRO de cada tarjeta
-            const textos = tarjeta.querySelectorAll('h1, h2, h3, p, label, div[data-baseweb="select"] div');
-            textos.forEach(t => {
-                t.style.setProperty('color', '#FFFFFF', 'important');
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguridad Vial - Sabana Occidente</title>
+
+    <!-- ====================================================
+         SCRIPT NEÓN — Streamlit lo extrae y lo inyecta solo
+         con el id "neon-streamlit". El resto de la página
+         se muestra cuando se abre directamente en el navegador.
+    ===================================================== -->
+    <script id="neon-streamlit">
+        function aplicarEstiloNeon(colorNeon, isDark) {
+            const bgColor = isDark ? 'rgba(14, 17, 23, 0.85)' : 'rgba(255, 255, 255, 0.95)';
+            const tarjetas = document.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
+            tarjetas.forEach(tarjeta => {
+                tarjeta.style.setProperty('background-color', bgColor, 'important');
+                tarjeta.style.setProperty('border', 'none', 'important');
+                tarjeta.style.setProperty('border-bottom', `4px solid ${colorNeon}`, 'important');
+                tarjeta.style.setProperty('border-radius', '8px', 'important');
+                tarjeta.style.setProperty('box-shadow', `0px 8px 20px -6px ${colorNeon}`, 'important');
+                tarjeta.style.setProperty('margin-bottom', '15px', 'important');
             });
+        }
+        const colorActivo = "COLOR_PLACEHOLDER";
+        const isDarkTheme = "THEME_PLACEHOLDER" === "true";
+        setTimeout(() => {
+            if (colorActivo !== "COLOR_PLACEHOLDER") aplicarEstiloNeon(colorActivo, isDarkTheme);
+        }, 500);
+        const observer = new MutationObserver(() => {
+            if (colorActivo !== "COLOR_PLACEHOLDER") aplicarEstiloNeon(colorActivo, isDarkTheme);
         });
-    }
+        observer.observe(document.body, { childList: true, subtree: true });
+    </script>
 
-    // Escuchar mensajes desde Python/Streamlit o ejecutar con parámetros fijos pasados desde Python
-    const colorActivo = "COLOR_PLACEHOLDER"; // Esto será reemplazado desde Python
-    const isDarkTheme = "THEME_PLACEHOLDER" === "true";
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    // Ejecutar la aplicación de estilos con un pequeño retraso para asegurar que Streamlit ya pintó los divs
-    setTimeout(() => {
-        if (colorActivo !== "COLOR_PLACEHOLDER") {
-            aplicarEstiloNeon(colorActivo, isDarkTheme);
+        :root {
+            --bg-primary: #F5F7FA;
+            --bg-secondary: #FFFFFF;
+            --text-primary: #2D3E50;
+            --text-secondary: #7F8C8D;
+            --border-color: #E8EEF5;
+            --primary-color: #5DADE2;
+            --accent-color: #52BE80;
+            --warning-color: #F8B739;
+            --danger-color: #E74C3C;
+            --nav-bg: #FFFFFF;
+            --nav-border: #E8EEF5;
+            --card-shadow: rgba(93, 173, 226, 0.08);
         }
-    }, 500);
 
-    // Observador para cambios en el DOM (en caso de que Streamlit recargue la vista)
-    const observer = new MutationObserver(() => {
-        if (colorActivo !== "COLOR_PLACEHOLDER") {
-            aplicarEstiloNeon(colorActivo, isDarkTheme);
+        html.dark {
+            --bg-primary: #0B132B;
+            --bg-secondary: #1E293B;
+            --text-primary: #F8FAFC;
+            --text-secondary: #94A3B8;
+            --border-color: rgba(255, 255, 255, 0.08);
+            --primary-color: #00D2FF;
+            --accent-color: #4ADE80;
+            --warning-color: #FBC02D;
+            --danger-color: #FF1744;
+            --nav-bg: rgba(15, 23, 42, 0.95);
+            --nav-border: rgba(0, 210, 255, 0.2);
+            --card-shadow: rgba(0, 210, 255, 0.1);
         }
-    });
 
-    observer.observe(window.parent.document.body, { childList: true, subtree: true });
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+            background-color: var(--bg-primary);
+            color: var(--text-primary);
+            transition: background-color 0.3s ease, color 0.3s ease;
+            line-height: 1.6;
+        }
 
-</script>
+        nav {
+            position: sticky; top: 0; z-index: 50;
+            background: var(--nav-bg);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--nav-border);
+            padding: 1rem 0;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        html.dark nav { box-shadow: 0 2px 8px rgba(0,0,0,0.3); }
+
+        .nav-container {
+            max-width: 1280px; margin: 0 auto; padding: 0 1rem;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+
+        .logo {
+            display: flex; align-items: center; gap: 0.5rem;
+            font-weight: bold; color: var(--text-primary);
+            text-decoration: none; font-size: 1.125rem;
+        }
+
+        .logo-icon {
+            width: 2.5rem; height: 2.5rem; border-radius: 0.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.25rem;
+            box-shadow: 0 4px 12px rgba(93,173,226,0.3);
+            transition: all 0.3s ease;
+        }
+
+        .nav-links { display: flex; align-items: center; gap: 1.5rem; }
+        .nav-links a { color: var(--text-secondary); text-decoration: none; font-weight: 500; transition: color 0.3s; }
+        .nav-links a:hover { color: var(--primary-color); }
+
+        .theme-toggle {
+            background: none; border: none; color: var(--text-secondary);
+            cursor: pointer; font-size: 1.25rem; padding: 0.5rem; transition: color 0.3s;
+        }
+        .theme-toggle:hover { color: var(--primary-color); }
+
+        .hero {
+            background: linear-gradient(135deg, #E8F4F8 0%, #F0F8FB 100%);
+            padding: 4rem 1rem; text-align: center;
+            color: var(--text-primary); transition: all 0.3s ease;
+        }
+        html.dark .hero { background: linear-gradient(135deg, rgba(15,23,42,0.9), rgba(30,41,59,0.8)); }
+        .hero h1 { font-size: 2.5rem; margin-bottom: 1rem; font-weight: 700; }
+        .hero p { font-size: 1.125rem; color: var(--text-secondary); margin-bottom: 0.5rem; }
+
+        .container { max-width: 1280px; margin: 0 auto; padding: 2rem 1rem; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem; margin: 2rem 0;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 0.65rem; padding: 1.5rem; transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 30px var(--card-shadow);
+            border-color: var(--primary-color);
+        }
+        .stat-icon { font-size: 2rem; margin-bottom: 0.5rem; }
+        .stat-label { font-size: 0.875rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.5rem; }
+        .stat-value { font-size: 1.875rem; font-weight: 700; color: var(--primary-color); margin-bottom: 0.25rem; }
+        .stat-desc { font-size: 0.875rem; color: var(--text-secondary); }
+
+        .predictor { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 3rem 0; }
+
+        .predictor-card {
+            background: var(--bg-secondary); border: 1px solid var(--border-color);
+            border-radius: 0.65rem; padding: 2rem; transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+        }
+        html.dark .predictor-card { box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .predictor-card h3 { font-size: 1.25rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem; color: var(--primary-color); }
+
+        .form-group { margin-bottom: 1.5rem; }
+        .form-label { display: block; font-weight: 600; margin-bottom: 0.5rem; font-size: 0.875rem; color: var(--text-primary); }
+
+        .form-input, .form-select {
+            width: 100%; padding: 0.75rem;
+            border: 1px solid var(--border-color); border-radius: 0.4rem;
+            background: var(--bg-primary); color: var(--text-primary);
+            font-size: 1rem; transition: all 0.3s ease;
+        }
+        .form-input:focus, .form-select:focus {
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(93,173,226,0.1);
+        }
+        html.dark .form-input:focus, html.dark .form-select:focus { box-shadow: 0 0 0 3px rgba(0,210,255,0.1); }
+
+        .slider { width: 100%; height: 6px; border-radius: 3px; background: var(--border-color); outline: none; -webkit-appearance: none; }
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none; appearance: none;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--primary-color); cursor: pointer;
+            box-shadow: 0 2px 6px rgba(93,173,226,0.4); transition: all 0.3s;
+        }
+        html.dark .slider::-webkit-slider-thumb { box-shadow: 0 2px 6px rgba(0,210,255,0.4); }
+        .slider::-moz-range-thumb {
+            width: 20px; height: 20px; border-radius: 50%;
+            background: var(--primary-color); cursor: pointer; border: none;
+            box-shadow: 0 2px 6px rgba(93,173,226,0.4);
+        }
+
+        .button {
+            width: 100%; padding: 0.75rem 1.5rem;
+            background: var(--primary-color); color: #FFFFFF;
+            border: none; border-radius: 0.65rem; font-weight: 600;
+            cursor: pointer; font-size: 1rem; transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(93,173,226,0.3);
+        }
+        html.dark .button { color: #0B132B; box-shadow: 0 4px 12px rgba(0,210,255,0.3); }
+        .button:hover { opacity: 0.9; transform: translateY(-2px); }
+
+        .risk-meter { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; }
+
+        .risk-circle {
+            width: 200px; height: 200px; border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(93,173,226,0.15), rgba(93,173,226,0.05));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 3rem; font-weight: 700; color: var(--primary-color);
+            box-shadow: 0 0 40px rgba(93,173,226,0.15), inset 0 0 40px rgba(93,173,226,0.08);
+            animation: pulse 2s ease-in-out infinite; transition: all 0.3s ease;
+        }
+        html.dark .risk-circle {
+            background: radial-gradient(circle at 30% 30%, rgba(0,210,255,0.2), rgba(0,210,255,0.05));
+            box-shadow: 0 0 40px rgba(0,210,255,0.2), inset 0 0 40px rgba(0,210,255,0.1);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .risk-label {
+            font-size: 1.25rem; font-weight: 700; text-align: center;
+            padding: 1rem; border-radius: 0.65rem; width: 100%;
+            background: rgba(93,173,226,0.1); border: 1px solid rgba(93,173,226,0.3);
+            color: var(--primary-color); transition: all 0.3s ease;
+        }
+        html.dark .risk-label { background: rgba(0,210,255,0.1); border: 1px solid rgba(0,210,255,0.3); }
+
+        .info-box {
+            margin-top: 1.5rem; padding: 1rem;
+            background: rgba(93,173,226,0.08); border-radius: 0.65rem;
+            font-size: 0.875rem; color: var(--text-secondary);
+            border-left: 4px solid var(--primary-color); transition: all 0.3s;
+        }
+        html.dark .info-box { background: rgba(0,210,255,0.08); }
+        .info-box strong { color: var(--text-primary); }
+
+        footer {
+            background: var(--bg-secondary); border-top: 1px solid var(--border-color);
+            padding: 2rem 1rem; text-align: center;
+            color: var(--text-secondary); margin-top: 3rem; transition: all 0.3s;
+        }
+
+        h2 { color: var(--text-primary); transition: color 0.3s ease; }
+
+        @media (max-width: 768px) {
+            .predictor { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.875rem; }
+            .nav-links { gap: 1rem; }
+            .logo span { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">🛣️</div>
+                <span>Seguridad Vial</span>
+            </a>
+            <div class="nav-links">
+                <a href="#inicio">Inicio</a>
+                <a href="#analisis">Análisis</a>
+                <button class="theme-toggle" onclick="toggleTheme()" title="Cambiar tema">
+                    <span id="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" id="inicio">
+        <h1>Análisis de la Accidentalidad Vial</h1>
+        <p>📍 Sabana Occidente (2021-2026)</p>
+        <p style="font-size: 0.95rem; margin-top: 1rem;">Conocer los riesgos hoy para prevenir los accidentes de mañana</p>
+    </section>
+
+    <div class="container" id="analisis">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">📊 Resumen Estadístico Global</h2>
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-icon">🚨</div>
+                <div class="stat-label">Total Accidentes</div>
+                <div class="stat-value">13,076</div>
+                <div class="stat-desc">Registros acumulados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">👤</div>
+                <div class="stat-label">Edad Promedio</div>
+                <div class="stat-value">35.2</div>
+                <div class="stat-desc">Datos de involucrados</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📍</div>
+                <div class="stat-label">Municipio Crítico</div>
+                <div class="stat-value">Madrid</div>
+                <div class="stat-desc">Mayor frecuencia</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚗</div>
+                <div class="stat-label">Actor Vulnerable</div>
+                <div class="stat-value">Vehículos</div>
+                <div class="stat-desc">Más involucrado</div>
+            </div>
+        </div>
+
+        <h2 style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem;">🔮 Predictor de Riesgo</h2>
+        <div class="predictor">
+            <div class="predictor-card">
+                <h3>⚙️ Parámetros del Escenario</h3>
+                <div class="form-group">
+                    <label class="form-label">Edad del Actor Vial: <span style="color: var(--primary-color);" id="age-display">30</span> años</label>
+                    <input type="range" class="slider" min="5" max="90" value="30" id="age-slider" oninput="updateRisk()">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Municipio</label>
+                    <select class="form-select" id="municipality" onchange="updateRisk()">
+                        <option>Madrid</option>
+                        <option>Facatativá</option>
+                        <option>Funza</option>
+                        <option>Mosquera</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Zona del Incidente</label>
+                    <select class="form-select" id="zone" onchange="updateRisk()">
+                        <option>Urbana</option>
+                        <option>Rural</option>
+                        <option>Sin información</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Género</label>
+                    <select class="form-select" id="gender" onchange="updateRisk()">
+                        <option>Masculino</option>
+                        <option>Femenino</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Tipo de Actor Vial</label>
+                    <select class="form-select" id="actor" onchange="updateRisk()">
+                        <option>Usuario de vehículo</option>
+                        <option>Usuario de moto</option>
+                        <option>Peatón</option>
+                        <option>Ciclista</option>
+                        <option>Otros</option>
+                    </select>
+                </div>
+                <button class="button" onclick="updateRisk()">Analizar Escenario</button>
+            </div>
+
+            <div class="predictor-card">
+                <h3>🎯 Predicción de Riesgo</h3>
+                <div class="risk-meter">
+                    <div class="risk-circle" id="risk-value">74%</div>
+                    <div class="risk-label" id="risk-label">🔴 RIESGO ALTO - CRÍTICO</div>
+                </div>
+                <div class="info-box">
+                    <strong>Análisis:</strong> Este índice se calcula considerando la edad, municipio, zona, género y tipo de actor vial. Los valores más altos indican mayor probabilidad de riesgo.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 Seguridad Vial · Sabana Occidente | Análisis de Accidentalidad Vial</p>
+        <p style="font-size: 0.875rem; margin-top: 0.5rem;">Datos 2021-2026 | Facatativá · Funza · Madrid · Mosquera</p>
+    </footer>
+
+    <script>
+        function toggleTheme() {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                document.getElementById('theme-icon').textContent = '🌙';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            }
+        }
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'dark') {
+                document.documentElement.classList.add('dark');
+                document.getElementById('theme-icon').textContent = '☀️';
+            } else {
+                document.documentElement.classList.remove('dark');
+                document.getElementById('theme-icon').textContent = '🌙';
+            }
+        }
+
+        function updateRisk() {
+            const age = parseInt(document.getElementById('age-slider').value);
+            document.getElementById('age-display').textContent = age;
+            const municipality = document.getElementById('municipality').value;
+            const zone = document.getElementById('zone').value;
+            const gender = document.getElementById('gender').value;
+            const actor = document.getElementById('actor').value;
+
+            let risk = 50;
+            if (age < 18) risk += 15;
+            else if (age > 65) risk += 10;
+            else if (age >= 18 && age <= 25) risk += 12;
+            if (municipality === 'Madrid') risk += 8;
+            else if (municipality === 'Facatativá') risk += 5;
+            if (zone === 'Rural') risk += 10;
+            else if (zone === 'Sin información') risk += 5;
+            if (gender === 'Masculino') risk += 5;
+            if (actor === 'Usuario de moto') risk += 15;
+            else if (actor === 'Peatón') risk += 10;
+            else if (actor === 'Ciclista') risk += 8;
+            risk = Math.min(100, risk);
+
+            const circle = document.getElementById('risk-value');
+            const labelEl = document.getElementById('risk-label');
+            circle.textContent = risk + '%';
+
+            let label = '', color = '';
+            if (risk < 50) { label = '🟢 RIESGO BAJO'; color = '#52BE80'; }
+            else if (risk < 70) { label = '🟠 RIESGO MEDIO'; color = '#F8B739'; }
+            else { label = '🔴 RIESGO ALTO - CRÍTICO'; color = '#E74C3C'; }
+
+            labelEl.textContent = label;
+            circle.style.color = color;
+            circle.style.boxShadow = `0 0 40px ${color}44, inset 0 0 40px ${color}22`;
+            labelEl.style.color = color;
+            labelEl.style.borderColor = color + '55';
+            labelEl.style.background = color + '11';
+        }
+
+        initTheme();
+        updateRisk();
+    </script>
+</body>
+</html>
