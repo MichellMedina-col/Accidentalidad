@@ -242,19 +242,23 @@ st.markdown(f"""
         padding-left: 1rem !important;
         padding-right: 1rem !important;
     }}
+    [data-testid="stMain"] .banner-title,
+    div.banner-container h1.banner-title,
     .banner-title {{
         color: #ffffff !important;
         font-size: 2.5rem !important;
         font-weight: 800 !important;
         margin-bottom: 1rem !important;
-        text-shadow: 2px 2px 8px rgba(0,0,0,0.8);
+        text-shadow: 2px 2px 8px rgba(0,0,0,0.8) !important;
         line-height: 1.2 !important;
     }}
+    [data-testid="stMain"] .banner-subtitle,
+    div.banner-container p.banner-subtitle,
     .banner-subtitle {{
         color: #F59E0B !important;
         font-size: 1.3rem !important;
         font-weight: 700 !important;
-        text-shadow: 1px 1px 5px rgba(0,0,0,0.9);
+        text-shadow: 1px 1px 5px rgba(0,0,0,0.9) !important;
         margin: 0 !important;
     }}
 
@@ -700,8 +704,8 @@ else:
     # ── TÍTULO DE LA PÁGINA ─────────────────────────────────────
     st.markdown(f"""
     <div style="margin-bottom: 2rem;">
-        <h1 style="color: var(--title-color); font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">Análisis Visual Global</h1>
-        <p style="color: #64748B; font-size: 1.1rem; margin-top: 5px;">Exploración del dataset completo de Sabana Occidente - Facatativá, Funza, Madrid y Mosquera</p>
+        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">Análisis Visual Global</h1>
+        <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración del dataset completo de Sabana Occidente - Facatativá, Funza, Madrid y Mosquera</p>
     </div>
     """, unsafe_allow_html=True)
 
