@@ -282,21 +282,26 @@ st.markdown(f"""
         letter-spacing: 0.05em;
     }}
 
-    /* Estilo exacto de la Captura 145658 aplicado solo al resumen */
+    /* Estilo e iluminación de la Captura 145658 aplicado solo al resumen */
     .tarjeta-resumen {{
-        background-color: #1E222D !important; /* Fondo oscuro interno para contraste */
-        border: 1px solid rgba(0, 210, 255, 0.2) !important;
-        border-bottom: 4px solid #00D2FF !important; /* Línea inferior azul neón gruesa */
+        background-color: var(--secondary-background-color) !important; /* Se aclara u oscurece solo */
+        border: 1px solid rgba(0, 210, 255, 0.15) !important;
+        border-bottom: 4px solid #00D2FF !important; /* Mantiene su línea azul neón fija */
         border-radius: 12px !important;
-        box-shadow: 0px 8px 25px -10px rgba(0, 210, 255, 0.6) !important; /* Brillo azul abajo */
+        
+        /* NEÓN SUAVIZADO: Bajamos la opacidad a 0.25 para que sea un reflejo sutil y elegante */
+        box-shadow: 0px 6px 15px -8px rgba(0, 210, 255, 0.25) !important; 
+        
         padding: 20px !important;
         margin-bottom: 15px !important;
         text-align: left;
+        transition: background-color 0.3s ease;
     }}
     
-    /* Asegurar que las letras dentro del resumen se vean blancas y perfectas */
+    /* Colores de texto adaptativos para que NUNCA se vuelvan invisibles */
     .tarjeta-resumen h4 {{
-        color: #8A99AD !important; /* Etiqueta gris clara arriba */
+        color: var(--text-color) !important;
+        opacity: 0.7; /* Título secundario un poco más suave */
         font-size: 13px !important;
         text-transform: uppercase;
         letter-spacing: 1px;
@@ -304,16 +309,21 @@ st.markdown(f"""
         margin-top: 0 !important;
     }}
     .tarjeta-resumen h2 {{
-        color: #FFFFFF !important; /* Número o dato principal en blanco */
+        color: var(--text-color) !important; /* Forzar el color de texto principal del sistema */
         font-size: 28px !important;
         font-weight: bold !important;
         margin: 0 !important;
     }}
     .tarjeta-resumen p {{
-        color: #00D2FF !important; /* Subtexto en azul neón */
+        color: #00D2FF !important; /* Subtexto mantiene el azul de la identidad */
         font-size: 12px !important;
         margin-top: 5px !important;
         margin-bottom: 0 !important;
+    }}
+
+    /* SOLUCIÓN LETRA INVISIBLE DEL RIESGO: Forzar que el subtexto del riesgo herede el color del tema */
+    .tarjeta-resumen-riesgo, [data-testid="stVerticalBlock"] p {{
+        color: var(--text-color) !important;
     }}
 
     /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
@@ -640,7 +650,7 @@ if "Inicio" in pagina:
                         </div>
                         <div style="background: {bg}; box-shadow: {glow_shadow}; border: {glow_border}; border-radius: 10px; padding: 14px 24px; width: 100%; display: block; margin-top: 20px; text-align: center;">
                             <div style="font-size: 1.15rem; font-weight: 800; color: {color_riesgo}; letter-spacing: 0.05em; text-shadow: 0px 0px 8px {color_riesgo}80;">{label}</div>
-                            <div style="font-size: 0.8rem; color: #F8FAFC; opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
+                            <div style="font-size: 0.8rem; color: var(--text-color); opacity: 0.8; margin-top: 4px;">Índice de riesgo estimado para el escenario</div>
                         </div>
                     </div>
                     """, unsafe_allow_html=True)
