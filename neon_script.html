@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seguridad Vial - Sabana Occidente</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
     
     <!-- SCRIPT NEÓN — Streamlit lo extrae y lo inyecta solo con el id "neon-streamlit" -->
     <script id="neon-streamlit">
@@ -247,6 +248,14 @@
             color: var(--text-secondary);
         }
 
+        /* Charts Grid */
+        .charts-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin: 2rem 0; }
+        .chart-card { background: var(--bg-secondary); border: 1px solid var(--border-color); border-radius: 0.65rem; padding: 1.5rem; transition: all 0.3s ease; }
+        .chart-card:hover { box-shadow: 0 8px 25px var(--card-shadow); }
+        .chart-card h3 { font-size: 1rem; font-weight: 700; color: var(--primary-color); margin-bottom: 1rem; text-transform: uppercase; letter-spacing: 0.03em; }
+        .chart-card canvas { max-height: 300px; }
+        @media (max-width: 768px) { .charts-grid { grid-template-columns: 1fr; } }
+
         /* Predictor Section */
         .predictor {
             display: grid;
@@ -312,10 +321,13 @@
             box-shadow: 0 0 0 3px rgba(93, 173, 226, 0.1);
         }
 
-        html.dark .form-input:focus, 
-        html.dark .form-select:focus {
+        .form-input:focus, 
+        .form-select:focus {
             box-shadow: 0 0 0 3px rgba(0, 210, 255, 0.1);
         }
+
+        .slider-wrapper { position: relative; padding-top: 8px; }
+        .pin-marker { position: absolute; top: -2px; font-size: 24px; pointer-events: none; transform: translateX(-50%); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); transition: left 0.1s; }
 
         .slider {
             width: 100%;
@@ -547,6 +559,19 @@
             </div>
         </div>
 
+        <!-- Charts Section -->
+        <h2 style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem;">📈 Análisis Visual Completo</h2>
+        <div class="charts-grid">
+            <div class="chart-card"><h3>🏘️ Accidentes por Municipio</h3><canvas id="chart-municipio"></canvas></div>
+            <div class="chart-card"><h3>📅 Accidentes por Mes</h3><canvas id="chart-meses"></canvas></div>
+            <div class="chart-card"><h3>⚡ Distribución por Tipo de Evento</h3><canvas id="chart-eventos"></canvas></div>
+            <div class="chart-card"><h3>👥 Distribución por Género</h3><canvas id="chart-genero"></canvas></div>
+            <div class="chart-card"><h3>🎂 Distribución de Edades</h3><canvas id="chart-edades"></canvas></div>
+            <div class="chart-card"><h3>🚗 Tipo de Actor Vial</h3><canvas id="chart-actor"></canvas></div>
+            <div class="chart-card"><h3>🗺️ Distribución por Zona</h3><canvas id="chart-zona"></canvas></div>
+            <div class="chart-card"><h3>🔥 Mapa de Calor: Municipio vs Evento</h3><canvas id="chart-heatmap"></canvas></div>
+        </div>
+
         <!-- Predictor -->
         <h2 style="font-size: 1.5rem; margin-top: 3rem; margin-bottom: 1.5rem;">🔮 Predictor de Riesgo</h2>
         <div class="predictor">
@@ -556,7 +581,10 @@
                 
                 <div class="form-group">
                     <label class="form-label">Edad del Actor Vial: <span style="color: var(--primary-color);" id="age-display">30</span> años</label>
-                    <input type="range" class="slider" min="5" max="90" value="30" id="age-slider" onchange="updateRisk()">
+                    <div class="slider-wrapper">
+                        <input type="range" class="slider" min="5" max="90" value="30" id="age-slider" oninput="updateSlider(); updateRisk()">
+                        <span class="pin-marker" id="pin-marker">📍</span>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -635,6 +663,7 @@
                 localStorage.setItem('theme', 'dark');
                 document.getElementById('theme-icon').textContent = '☀️';
             }
+            if(typeof renderCharts === 'function') renderCharts();
         }
 
         // Initialize theme
@@ -701,9 +730,68 @@
             document.getElementById('risk-label').textContent = label;
         }
 
+        function updateSlider() {
+            const s = document.getElementById('age-slider');
+            const pin = document.getElementById('pin-marker');
+            if(s && pin) {
+                const pct = (s.value - s.min) / (s.max - s.min);
+                pin.style.left = `calc(${pct * 100}% + ${(0.5 - pct) * 16}px)`;
+            }
+        }
+
+        const chartInstances = {};
+        function makeChart(id, config) {
+            if (chartInstances[id]) chartInstances[id].destroy();
+            chartInstances[id] = new Chart(document.getElementById(id), config);
+        }
+
+        function renderCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const tc = isDark ? '#F8FAFC' : '#2D3E50';
+            const gc = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)';
+            const colors = ['#5DADE2','#52BE80','#F8B739','#E74C3C','#9B59B6','#1ABC9C','#E67E22','#34495E'];
+            const darkColors = ['#00D2FF','#4ADE80','#FBC02D','#FF1744','#BB86FC','#2DD4BF','#F59E0B','#64748B'];
+            const palette = isDark ? darkColors : colors;
+
+            // 1. Municipio
+            makeChart('chart-municipio', { type: 'bar', data: { labels: ['Funza','Mosquera','Madrid','Facatativá'], datasets: [{ label: 'Cantidad', data: [4647,3513,2564,1519], backgroundColor: palette.slice(0,4), borderRadius: 6 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: tc }, grid: { display: false } }, y: { ticks: { color: tc }, grid: { color: gc } } } } });
+
+            // 2. Meses
+            const mNames = ['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+            const mData = [845,1041,1068,1014,952,944,1965,883,901,899,762,969];
+            makeChart('chart-meses', { type: 'bar', data: { labels: mNames, datasets: [{ label: 'Accidentes', data: mData, backgroundColor: mData.map((v,i) => palette[i % palette.length]), borderRadius: 4 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: tc }, grid: { display: false } }, y: { ticks: { color: tc }, grid: { color: gc } } } } });
+
+            // 3. Eventos
+            makeChart('chart-eventos', { type: 'doughnut', data: { labels: ['Lesión','No Reportado','Accidente','Homicidio'], datasets: [{ data: [4868,4589,3102,517], backgroundColor: palette.slice(0,4), borderWidth: 0 }] }, options: { responsive: true, plugins: { legend: { labels: { color: tc }, position: 'bottom' } } } });
+
+            // 4. Género
+            makeChart('chart-genero', { type: 'doughnut', data: { labels: ['Masculino','No Reportado','Femenino'], datasets: [{ data: [5322,4966,2788], backgroundColor: [palette[0], palette[7], palette[3]], borderWidth: 0 }] }, options: { responsive: true, plugins: { legend: { labels: { color: tc }, position: 'bottom' } } } });
+
+            // 5. Edades
+            const edLabels = ['0-5','5-10','10-15','15-20','20-25','25-30','30-35','35-40','40-45','45-50','50-55','55-60','60-65','65-70','70-75','75-80','80-85','85-90'];
+            const edData = [1,10,88,253,400,421,10721,258,228,173,138,127,89,74,44,25,13,13];
+            makeChart('chart-edades', { type: 'bar', data: { labels: edLabels, datasets: [{ label: 'Casos', data: edData, backgroundColor: palette[0], borderRadius: 3 }] }, options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: tc, maxRotation: 45 }, grid: { display: false } }, y: { ticks: { color: tc }, grid: { color: gc } } } } });
+
+            // 6. Actor Vial
+            makeChart('chart-actor', { type: 'bar', data: { labels: ['Moto','Bicicleta','Peatón','Vehículo','Otros'], datasets: [{ label: 'Cantidad', data: [1071,554,525,523,13], backgroundColor: palette.slice(0,5), borderRadius: 6 }] }, options: { indexAxis: 'y', responsive: true, plugins: { legend: { display: false } }, scales: { x: { ticks: { color: tc }, grid: { color: gc } }, y: { ticks: { color: tc }, grid: { display: false } } } } });
+
+            // 7. Zona
+            makeChart('chart-zona', { type: 'pie', data: { labels: ['No Reportado','Urbana','Rural','Sin Info'], datasets: [{ data: [10389,1245,723,719], backgroundColor: palette.slice(0,4), borderWidth: 0 }] }, options: { responsive: true, plugins: { legend: { labels: { color: tc }, position: 'bottom' } } } });
+
+            // 8. Heatmap
+            makeChart('chart-heatmap', { type: 'bar', data: { labels: ['Funza','Mosquera','Madrid','Facatativá'], datasets: [
+                { label: 'Lesión', data: [1800,1200,1100,768], backgroundColor: palette[0] },
+                { label: 'No Reportado', data: [1500,1300,800,589], backgroundColor: palette[1] },
+                { label: 'Accidente', data: [1100,800,500,102], backgroundColor: palette[2] },
+                { label: 'Homicidio', data: [247,213,164,60], backgroundColor: palette[3] }
+            ] }, options: { responsive: true, plugins: { legend: { labels: { color: tc }, position: 'bottom' } }, scales: { x: { stacked: true, ticks: { color: tc }, grid: { display: false } }, y: { stacked: true, ticks: { color: tc }, grid: { color: gc } } } } });
+        }
+
         // Initialize
         initTheme();
+        updateSlider();
         updateRisk();
+        setTimeout(renderCharts, 100);
     </script>
 </body>
 </html>
