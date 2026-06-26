@@ -283,7 +283,8 @@ st.markdown(f"""
     }}
 
     /* Contenedor principal de cada tarjeta del resumen */
-    .tarjeta-resumen {{
+    [data-testid="stMain"] .tarjeta-resumen,
+    div.tarjeta-resumen {{
         background-color: var(--secondary-background-color) !important; /* El fondo sí se adapta solo */
         border: 1px solid rgba(0, 210, 255, 0.15) !important;
         border-bottom: 4px solid #00D2FF !important; /* Línea azul neón sutil fija */
@@ -295,28 +296,31 @@ st.markdown(f"""
     }}
     
     /* 1. COLOR FIJO PARA EL TÍTULO (Gris Plomo Elegante - No cambia) */
-    .tarjeta-resumen h4 {{
+    [data-testid="stMain"] .tarjeta-resumen h4,
+    div.tarjeta-resumen h4 {{
         color: #64748B !important; 
         font-size: 13px !important;
-        text-transform: uppercase;
-        letter-spacing: 1px;
+        text-transform: uppercase !important;
+        letter-spacing: 1px !important;
         margin-bottom: 5px !important;
         margin-top: 0 !important;
-        display: flex;
-        align-items: center;
-        gap: 6px;
+        display: flex !important;
+        align-items: center !important;
+        gap: 6px !important;
     }}
     
-    /* 2. COLOR FIJO PARA EL DATO PRINCIPAL / SUBTÍTULO (Blanco Puro - No cambia) */
-    .tarjeta-resumen h2 {{
+    /* 2. COLOR FIJO PARA EL DATO PRINCIPAL (Blanco Puro - No cambia) */
+    [data-testid="stMain"] .tarjeta-resumen h2,
+    div.tarjeta-resumen h2 {{
         color: #FFFFFF !important; 
         font-size: 28px !important;
         font-weight: bold !important;
         margin: 0 !important;
     }}
     
-    /* Texto descriptivo inferior (Azul Cyan de la marca - No cambia) */
-    .tarjeta-resumen p {{
+    /* 3. COLOR FIJO PARA EL SUBTÍTULO / TEXTO DESCRIPTIVO (Azul Cyan de la marca - No cambia) */
+    [data-testid="stMain"] .tarjeta-resumen p,
+    div.tarjeta-resumen p {{
         color: #00D2FF !important; 
         font-size: 12px !important;
         margin-top: 5px !important;
@@ -324,7 +328,8 @@ st.markdown(f"""
     }}
     
     /* Garantizar que el emoji mantenga su color nativo original */
-    .tarjeta-resumen span.emoji {{
+    [data-testid="stMain"] .tarjeta-resumen span.emoji,
+    div.tarjeta-resumen span.emoji {{
         color: initial !important;
         font-style: normal !important;
     }}
@@ -482,36 +487,36 @@ if "Inicio" in pagina:
     with col1:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4><span class='emoji'>🚨</span> Total Accidentes</h4>
-                <h2>{kpi_incidentes}</h2>
-                <p>Registros acumulados</p>
+                <h4 style='color: #64748B !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin-bottom: 5px !important; margin-top: 0 !important; display: flex !important; align-items: center !important; gap: 6px !important;'><span class='emoji' style='color: initial !important; font-style: normal !important;'>🚨</span> Total Accidentes</h4>
+                <h2 style='color: #FFFFFF !important; font-size: 28px !important; font-weight: bold !important; margin: 0 !important;'>{kpi_incidentes}</h2>
+                <p style='color: #00D2FF !important; font-size: 12px !important; margin-top: 5px !important; margin-bottom: 0 !important;'>Registros acumulados</p>
             </div>
         """, unsafe_allow_html=True)
 
     with col2:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4><span class='emoji'>🎂</span> Edad Promedio</h4>
-                <h2>{kpi_edad} años</h2>
-                <p>Datos de involucrados</p>
+                <h4 style='color: #64748B !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin-bottom: 5px !important; margin-top: 0 !important; display: flex !important; align-items: center !important; gap: 6px !important;'><span class='emoji' style='color: initial !important; font-style: normal !important;'>🎂</span> Edad Promedio</h4>
+                <h2 style='color: #FFFFFF !important; font-size: 28px !important; font-weight: bold !important; margin: 0 !important;'>{kpi_edad} años</h2>
+                <p style='color: #00D2FF !important; font-size: 12px !important; margin-top: 5px !important; margin-bottom: 0 !important;'>Datos de involucrados</p>
             </div>
         """, unsafe_allow_html=True)
 
     with col3:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4><span class='emoji'>📍</span> Municipio Crítico</h4>
-                <h2>{kpi_mun}</h2>
-                <p>Mayor frecuencia</p>
+                <h4 style='color: #64748B !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin-bottom: 5px !important; margin-top: 0 !important; display: flex !important; align-items: center !important; gap: 6px !important;'><span class='emoji' style='color: initial !important; font-style: normal !important;'>📍</span> Municipio Crítico</h4>
+                <h2 style='color: #FFFFFF !important; font-size: 28px !important; font-weight: bold !important; margin: 0 !important;'>{kpi_mun}</h2>
+                <p style='color: #00D2FF !important; font-size: 12px !important; margin-top: 5px !important; margin-bottom: 0 !important;'>Mayor frecuencia</p>
             </div>
         """, unsafe_allow_html=True)
 
     with col4:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4><span class='emoji'>👤</span> Actor Vulnerable</h4>
-                <h2>{kpi_actor}</h2>
-                <p>Más involucrado</p>
+                <h4 style='color: #64748B !important; font-size: 13px !important; text-transform: uppercase !important; letter-spacing: 1px !important; margin-bottom: 5px !important; margin-top: 0 !important; display: flex !important; align-items: center !important; gap: 6px !important;'><span class='emoji' style='color: initial !important; font-style: normal !important;'>👤</span> Actor Vulnerable</h4>
+                <h2 style='color: #FFFFFF !important; font-size: 28px !important; font-weight: bold !important; margin: 0 !important;'>{kpi_actor}</h2>
+                <p style='color: #00D2FF !important; font-size: 12px !important; margin-top: 5px !important; margin-bottom: 0 !important;'>Más involucrado</p>
             </div>
         """, unsafe_allow_html=True)
 
