@@ -241,34 +241,22 @@ st.markdown(f"""
         margin: 0 !important;
     }}
 
-    /* Cajas Independientes (Contenedores) - Línea inferior neón */
-    div[data-testid="stVerticalBlockBorderWrapper"], div[data-testid="stVerticalBlock"] > div {{
-        background-color: rgba(14, 17, 23, 0.85) !important;
-        border: none !important;
-        border-bottom: 4px solid {risk_color} !important;
-        border-radius: 8px !important;
-        box-shadow: 0px 8px 20px -6px {risk_color} !important;
+    /* Cajas Independientes (Contenedores) - Tema original */
+    div[data-testid="stVerticalBlockBorderWrapper"] {{
+        background-color: var(--card-bg) !important;
+        border: 1px solid var(--card-border) !important;
+        border-radius: 12px !important;
+        box-shadow: var(--card-shadow) !important;
         padding: 1.5rem !important;
         transition: all 0.5s ease;
-        margin-bottom: 15px !important;
     }}
-    div[data-testid="stVerticalBlockBorderWrapper"]:hover, div[data-testid="stVerticalBlock"] > div:hover {{
+    div[data-testid="stVerticalBlockBorderWrapper"]:hover {{
         transform: translateY(-2px);
-    }}
-
-    /* Forzar color de texto blanco para legibilidad */
-    [data-testid="stAppViewContainer"] h1,
-    [data-testid="stAppViewContainer"] h2,
-    [data-testid="stAppViewContainer"] h3,
-    [data-testid="stAppViewContainer"] p,
-    [data-testid="stWidgetLabel"] p,
-    div[data-baseweb="select"] div {{
-        color: #FFFFFF !important;
     }}
 
     /* Títulos de los bloques */
     .block-title {{
-        color: #FFFFFF !important;
+        color: var(--title-color) !important;
         font-size: 1.15rem !important;
         font-weight: 800 !important;
         margin-bottom: 1rem !important;
@@ -277,20 +265,38 @@ st.markdown(f"""
         letter-spacing: 0.05em;
     }}
 
-    /* KPIs */
-    .kpi-value {{
-        font-size: 2rem;
-        font-weight: 800;
-        color: #FFFFFF;
-        line-height: 1.2;
+    /* Estilo exacto de la Captura 145658 aplicado solo al resumen */
+    .tarjeta-resumen {{
+        background-color: #1E222D !important; /* Fondo oscuro interno para contraste */
+        border: 1px solid rgba(0, 210, 255, 0.2) !important;
+        border-bottom: 4px solid #00D2FF !important; /* Línea inferior azul neón gruesa */
+        border-radius: 12px !important;
+        box-shadow: 0px 8px 25px -10px rgba(0, 210, 255, 0.6) !important; /* Brillo azul abajo */
+        padding: 20px !important;
+        margin-bottom: 15px !important;
+        text-align: left;
     }}
-    .kpi-label {{
-        font-size: 0.8rem;
-        font-weight: 600;
-        color: #94A3B8;
+    
+    /* Asegurar que las letras dentro del resumen se vean blancas y perfectas */
+    .tarjeta-resumen h4 {{
+        color: #8A99AD !important; /* Etiqueta gris clara arriba */
+        font-size: 13px !important;
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-bottom: 4px;
+        letter-spacing: 1px;
+        margin-bottom: 5px !important;
+        margin-top: 0 !important;
+    }}
+    .tarjeta-resumen h2 {{
+        color: #FFFFFF !important; /* Número o dato principal en blanco */
+        font-size: 28px !important;
+        font-weight: bold !important;
+        margin: 0 !important;
+    }}
+    .tarjeta-resumen p {{
+        color: #00D2FF !important; /* Subtexto en azul neón */
+        font-size: 12px !important;
+        margin-top: 5px !important;
+        margin-bottom: 0 !important;
     }}
 
     /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
@@ -440,34 +446,44 @@ if "Inicio" in pagina:
     kpi_mun = df_full[COL_MUN].mode()[0] if COL_MUN else "N/D"
     kpi_actor = df_full[COL_ACTOR].mode()[0] if COL_ACTOR else "N/D"
 
-    with st.container(border=True):
-        st.markdown('<div class="block-title">Resumen Estadístico Global</div>', unsafe_allow_html=True)
-        col1, col2, col3, col4 = st.columns(4)
-        
-        with col1:
-            st.markdown(f"""
-            <div class="kpi-label">Total Accidentes</div>
-            <div class="kpi-value">{kpi_incidentes}</div>
-            <div style="font-size: 11px; color: #64748B;">Registros acumulados</div>
-            """, unsafe_allow_html=True)
-        with col2:
-            st.markdown(f"""
-            <div class="kpi-label">Edad Promedio</div>
-            <div class="kpi-value">{kpi_edad}</div>
-            <div style="font-size: 11px; color: #64748B;">Años</div>
-            """, unsafe_allow_html=True)
-        with col3:
-            st.markdown(f"""
-            <div class="kpi-label">Municipio Crítico</div>
-            <div class="kpi-value" style="font-size: 1.5rem;">{kpi_mun}</div>
-            <div style="font-size: 11px; color: #64748B;">Mayor frecuencia</div>
-            """, unsafe_allow_html=True)
-        with col4:
-            st.markdown(f"""
-            <div class="kpi-label">Actor Vulnerable</div>
-            <div class="kpi-value" style="font-size: 1.3rem;">{kpi_actor}</div>
-            <div style="font-size: 11px; color: #64748B;">Más involucrado</div>
-            """, unsafe_allow_html=True)
+    st.subheader("📊 Resumen Estadístico Global")
+    col1, col2, col3, col4 = st.columns(4)
+
+    with col1:
+        st.markdown(f"""
+            <div class='tarjeta-resumen'>
+                <h4>🚨 Total Accidentes</h4>
+                <h2>{kpi_incidentes}</h2>
+                <p>Registros acumulados</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col2:
+        st.markdown(f"""
+            <div class='tarjeta-resumen'>
+                <h4>🎂 Edad Promedio</h4>
+                <h2>{kpi_edad} años</h2>
+                <p>Datos de involucrados</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col3:
+        st.markdown(f"""
+            <div class='tarjeta-resumen'>
+                <h4>📍 Municipio Crítico</h4>
+                <h2>{kpi_mun}</h2>
+                <p>Mayor frecuencia</p>
+            </div>
+        """, unsafe_allow_html=True)
+
+    with col4:
+        st.markdown(f"""
+            <div class='tarjeta-resumen'>
+                <h4>👤 Actor Vulnerable</h4>
+                <h2>{kpi_actor}</h2>
+                <p>Más involucrado</p>
+            </div>
+        """, unsafe_allow_html=True)
 
     # ── PREDICTOR DE RIESGO ─────────────────────────────────────
     p1, p2 = st.columns([1, 1], gap="large")
@@ -615,28 +631,7 @@ if "Inicio" in pagina:
                     # Guardar color de riesgo en session_state para glow global
                     st.session_state.risk_color = color_riesgo
 
-                    # Inyectar CSS dinámico del color de riesgo para los contenedores (además de JS)
-                    css_cajones_dinamico = f"""
-                    <style>
-                        div[data-testid="stVerticalBlockBorderWrapper"], div[data-testid="stVerticalBlock"] > div {{
-                            border-bottom: 4px solid {color_riesgo} !important;
-                            box-shadow: 0px 8px 20px -6px {color_riesgo} !important;
-                        }}
-                    </style>
-                    """
-                    st.markdown(css_cajones_dinamico, unsafe_allow_html=True)
-
-                    # 2. Inyectar JS override para el efecto neón dinámico
-                    try:
-                        with open("neon_script.html", "r", encoding="utf-8") as f:
-                            js_code = f.read()
-                        
-                        js_code = js_code.replace("COLOR_PLACEHOLDER", color_riesgo)
-                        js_code = js_code.replace("THEME_PLACEHOLDER", "true" if is_dark else "false")
-                        
-                        components.html(js_code, height=0, width=0)
-                    except Exception as e:
-                        pass
+                    pass
         
                 except Exception as e:
                     st.error(f"Error en predicción: {e}")
