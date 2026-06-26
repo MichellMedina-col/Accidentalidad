@@ -471,8 +471,8 @@ with st.sidebar:
         label_visibility="collapsed"
     )
 
-    # Espacio flexible y Burbuja inferior SENA
-    st.markdown('<div style="flex-grow: 1; height: 35vh;"></div>', unsafe_allow_html=True)
+    # Espacio flexible y Burbuja inferior SENA (ajustado para dar espacio al QR)
+    st.markdown('<div style="flex-grow: 1; height: 10vh;"></div>', unsafe_allow_html=True)
     
     # Selector de tema manual integrado estéticamente antes de los créditos
     st.selectbox("🌓 Tema Visual", ["Automático", "Modo Claro", "Modo Oscuro"], key='tema')
@@ -484,6 +484,19 @@ with st.sidebar:
         <div style="font-size: 11px; opacity: 0.7;">Análisis de Accidentalidad Vial</div>
     </div>
     """, unsafe_allow_html=True)
+
+    # Código QR para acceso rápido desde el celular
+    st.markdown("---")
+    url_app = "https://accidentalidad-sabana.streamlit.app"
+    qr_api_url = f"https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl={url_app}"
+    
+    st.markdown("""
+    <div style="text-align: center; margin-bottom: 5px;">
+        <div style="font-size: 13px; font-weight: 700; color: var(--sidebar-text);">📱 ¡Escanea y navega!</div>
+        <div style="font-size: 10px; opacity: 0.7; color: var(--sidebar-text); margin-bottom: 5px;">Accede a la app desde tu celular</div>
+    </div>
+    """, unsafe_allow_html=True)
+    st.image(qr_api_url, use_container_width=True)
 
 
 # ════════════════════════════════════════════════════════════════
