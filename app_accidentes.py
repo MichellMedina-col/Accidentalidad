@@ -735,134 +735,18 @@ if "Inicio" in pagina:
 #  PÁGINA ANÁLISIS VISUAL
 # ════════════════════════════════════════════════════════════════
 else:
-    # ── TÍTULO DE LA PÁGINA ─────────────────────────────────────
-    st.markdown(f"""
+    st.markdown("""
     <div style="margin-bottom: 2rem;">
-        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">Análisis Visual Global</h1>
-        <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración del dataset completo de Sabana Occidente - Facatativá, Funza, Madrid y Mosquera</p>
+        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis de Datos del Notebook (.ipynb)</h1>
+        <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración detallada de la accidentalidad vial</p>
     </div>
     """, unsafe_allow_html=True)
-
-    # ── GRÁFICOS (Limpios, sin filtros de predictor) ─────────────
-    # Filas de 2 columnas para organizar los gráficos
     
-    # FILA 1
-    c1, c2 = st.columns(2, gap="large")
-    with c1:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Accidentes por Municipio</div>', unsafe_allow_html=True)
-            acc_mun = df_full.groupby(COL_MUN)[COL_CANT].sum().sort_values(ascending=False).reset_index()
-            fig1 = px.bar(acc_mun, x=COL_MUN, y=COL_CANT, 
-                          color=COL_CANT, color_continuous_scale=['#38BDF8', '#F59E0B'])
-            fig1 = plotly_layout(fig1)
-            fig1.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
-            st.plotly_chart(fig1, use_container_width=True, config={'displayModeBar': False})
-
-    with c2:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Distribución de Edades</div>', unsafe_allow_html=True)
-            fig2 = px.histogram(df_full, x=COL_EDAD, nbins=20, 
-                                color_discrete_sequence=['#38BDF8'])
-            fig2 = plotly_layout(fig2)
-            fig2.update_layout(showlegend=False, xaxis_title="Edad", yaxis_title="Frecuencia", bargap=0.05)
-            st.plotly_chart(fig2, use_container_width=True, config={'displayModeBar': False})
-
-    # FILA 2
-    c3, c4 = st.columns(2, gap="large")
-    with c3:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Accidentes por Mes</div>', unsafe_allow_html=True)
-            if 'fecha_hecho' in df_full.columns:
-                df_mes = df_full.copy()
-                df_mes['Mes'] = df_mes['fecha_hecho'].dt.month
-                acc_mes = df_mes.groupby('Mes')[COL_CANT].sum().reset_index()
-                meses_nombres = {1:'Ene', 2:'Feb', 3:'Mar', 4:'Abr', 5:'May', 6:'Jun', 
-                                 7:'Jul', 8:'Ago', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dic'}
-                acc_mes['Nombre_Mes'] = acc_mes['Mes'].map(meses_nombres)
-                fig3 = px.bar(acc_mes, x='Nombre_Mes', y=COL_CANT, 
-                              color=COL_CANT, color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig3 = plotly_layout(fig3)
-                fig3.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
-                st.plotly_chart(fig3, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columna fecha_hecho no disponible.")
-
-    with c4:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Distribución de Tipos de Evento</div>', unsafe_allow_html=True)
-            if COL_EVENTO:
-                acc_ev = df_full[COL_EVENTO].value_counts().reset_index()
-                acc_ev.columns = ['Tipo Evento', 'Cantidad']
-                fig4 = px.bar(acc_ev, x='Tipo Evento', y='Cantidad', 
-                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig4 = plotly_layout(fig4)
-                fig4.update_layout(showlegend=False, xaxis_title="", yaxis_title="")
-                st.plotly_chart(fig4, use_container_width=True, config={'displayModeBar': False})
-
-    # FILA 3
-    c5, c6 = st.columns(2, gap="large")
-    with c5:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Mapa de Calor (Municipio vs Evento)</div>', unsafe_allow_html=True)
-            if COL_MUN and COL_EVENTO:
-                tabla = df_full.pivot_table(values=COL_CANT, index=COL_MUN, columns=COL_EVENTO, aggfunc='sum', fill_value=0)
-                fig5 = px.imshow(tabla, text_auto=True, aspect="auto", color_continuous_scale='Blues')
-                fig5 = plotly_layout(fig5)
-                fig5.update_layout(xaxis_title="", yaxis_title="")
-                st.plotly_chart(fig5, use_container_width=True, config={'displayModeBar': False})
-
-    with c6:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Distribución de Edad por Evento</div>', unsafe_allow_html=True)
-            if COL_EVENTO and COL_EDAD:
-                fig6 = px.box(df_full, x=COL_EVENTO, y=COL_EDAD, color=COL_EVENTO, 
-                              color_discrete_sequence=px.colors.qualitative.Pastel)
-                fig6 = plotly_layout(fig6)
-                fig6.update_layout(showlegend=False, xaxis_title="", yaxis_title="Edad")
-                st.plotly_chart(fig6, use_container_width=True, config={'displayModeBar': False})
-
-    # FILA 4
-    c7, c8 = st.columns(2, gap="large")
-    with c7:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Género vs Tipo de Evento</div>', unsafe_allow_html=True)
-            if COL_GENERO and COL_EVENTO:
-                fig7 = px.histogram(df_full, x=COL_GENERO, color=COL_EVENTO, barmode='group',
-                                    color_discrete_sequence=px.colors.qualitative.Set2)
-                fig7 = plotly_layout(fig7)
-                fig7.update_layout(xaxis_title="Género", yaxis_title="Cantidad")
-                st.plotly_chart(fig7, use_container_width=True, config={'displayModeBar': False})
-
-    with c8:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">Importancia de Variables (Modelo)</div>', unsafe_allow_html=True)
-            if modelo is not None:
-                try:
-                    cols_mod = list(modelo.feature_names_in_)
-                    # Limpiamos los nombres para mostrar
-                    display_cols = [c.split('_')[0] for c in cols_mod]
-                    importances = modelo.feature_importances_
-                    # Agrupar importancias por categoría general
-                    imp_df = pd.DataFrame({'Variable': display_cols, 'Importancia': importances})
-                    imp_grouped = imp_df.groupby('Variable')['Importancia'].sum().sort_values()
-                    
-                    fig8 = px.bar(x=imp_grouped.values, y=imp_grouped.index, orientation='h',
-                                  color=imp_grouped.values, color_continuous_scale=['#38BDF8', '#F59E0B'])
-                    fig8 = plotly_layout(fig8)
-                    fig8.update_layout(showlegend=False, xaxis_title="Importancia", yaxis_title="")
-                    st.plotly_chart(fig8, use_container_width=True, config={'displayModeBar': False})
-                except Exception:
-                    st.info("Importancia de variables no disponible.")
-            else:
-                st.info("Modelo no disponible.")
-
-    # FILA 5 (Opcional - Matriz/Árbol)
-    with st.container(border=True):
-        st.markdown('<div class="block-title">Estructura del Árbol de Decisión (Random Forest)</div>', unsafe_allow_html=True)
-        try:
-            if os.path.exists("arbol_random_forest.png"):
-                st.image("arbol_random_forest.png", use_container_width=True)
-            else:
-                st.info("Imagen del árbol no encontrada (arbol_random_forest.png)")
-        except Exception:
-            pass
+    # Aquí inyectamos el HTML que lee el archivo de las gráficas
+    import streamlit.components.v1 as components
+    if os.path.exists("neon_script.html"):
+        with open("neon_script.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        components.html(html_content, height=1200, scrolling=True)
+    else:
+        st.warning("El archivo neon_script.html no fue encontrado.")
