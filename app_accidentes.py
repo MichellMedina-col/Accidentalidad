@@ -361,21 +361,6 @@ st.markdown(f"""
         }}
     }}
 
-    /* Ocultar el botón verde nativo del slider y poner el Pin 📍 */
-    div[data-testid="stSlider"] [role="slider"] {{
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }}
-    div[data-testid="stSlider"] [role="slider"]::before {{
-        content: "📍" !important;
-        font-size: 22px !important;
-        display: block;
-        position: absolute;
-        top: -12px;
-        left: -6px;
-    }}
-
     /* Scrollbar */
     ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
     ::-webkit-scrollbar-track {{ background: transparent; }}
@@ -383,35 +368,20 @@ st.markdown(f"""
 </style>
 """, unsafe_allow_html=True)
 
-# ─── INYECCIÓN DEL SCRIPT NEÓN (EXTRAE SOLO EL SCRIPT) ────────
-# neon_script.html contiene la app standalone completa + el script neón.
-# Aquí extraemos SOLO el <script id="neon-streamlit">...</script>
-# para inyectarlo en Streamlit sin romper la interfaz.
-import re
-try:
-    neon_html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "neon_script.html")
-    if os.path.exists(neon_html_path):
-        with open(neon_html_path, "r", encoding="utf-8") as f:
-            neon_raw = f.read()
-        # Extraer solo el script con id="neon-streamlit"
-        match = re.search(r'(<script id="neon-streamlit">.*?</script>)', neon_raw, re.DOTALL)
-        if match:
-            neon_script = match.group(1)
-            neon_script = neon_script.replace("COLOR_PLACEHOLDER", risk_color)
-            neon_script = neon_script.replace("THEME_PLACEHOLDER", "true" if tema_actual == "Modo Oscuro" else "false")
-            st.markdown(neon_script, unsafe_allow_html=True)
-except Exception:
-    pass  # Silencioso: el script neón es cosmético, no crítico
-
-
 def plotly_layout(fig):
+    is_dark = (st.session_state.get('tema', 'Automático') == "Modo Oscuro") or (st.session_state.get('tema', 'Automático') == "Automático")
+    plotly_text_color = "#F8FAFC" if is_dark else "#002855"
+    plotly_grid_color = "rgba(255,255,255,0.08)" if is_dark else "rgba(0,0,0,0.08)"
+    
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Inter, sans-serif"),
+        font=dict(family="Inter, sans-serif", color=plotly_text_color),
         margin=dict(l=8, r=8, t=40, b=8),
         hoverlabel=dict(bgcolor="rgba(30,41,59,0.9)", font=dict(color="#ffffff", size=12))
     )
+    fig.update_xaxes(showgrid=True, gridcolor=plotly_grid_color, tickfont=dict(color=plotly_text_color), titlefont=dict(color=plotly_text_color))
+    fig.update_yaxes(showgrid=True, gridcolor=plotly_grid_color, tickfont=dict(color=plotly_text_color), titlefont=dict(color=plotly_text_color))
     return fig
 
 # ─── CARGA DE DATOS ───────────────────────────────────────────
@@ -489,10 +459,9 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    pagina = st.radio(
+    opcion = st.radio(
         "Navegación",
-        ["🏠 Inicio - Predictor", "📊 Análisis Visual"],
-        label_visibility="collapsed"
+        ["Inicio - Predictor", "Análisis Visual"]
     )
 
     # Espacio flexible y Burbuja inferior SENA (ajustado para dar espacio al QR)
@@ -523,7 +492,7 @@ with st.sidebar:
 # ════════════════════════════════════════════════════════════════
 #  PÁGINA INICIO · PREDICTOR
 # ════════════════════════════════════════════════════════════════
-if "Inicio" in pagina:
+if opcion == "Inicio - Predictor":
     # ── BANNER PRINCIPAL ───────────────────────────────────────
     st.markdown(f"""
     <div class="banner-container">
@@ -584,6 +553,24 @@ if "Inicio" in pagina:
         with st.container(border=True):
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
             edad = st.slider("Edad del actor vial", 0, 100, 30)
+            css_slider_pin = """
+<style>
+    div[data-testid="stSlider"] [role="slider"] {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }
+    div[data-testid="stSlider"] [role="slider"]::before {
+        content: "📍" !important;
+        font-size: 22px !important;
+        display: block;
+        position: absolute;
+        top: -12px;
+        left: -6px;
+    }
+</style>
+"""
+            st.markdown(css_slider_pin, unsafe_allow_html=True)
             
             def limpiar_opciones(col_name):
                 opciones = sorted(df_full[col_name].dropna().unique())
@@ -734,7 +721,7 @@ if "Inicio" in pagina:
 # ════════════════════════════════════════════════════════════════
 #  PÁGINA ANÁLISIS VISUAL
 # ════════════════════════════════════════════════════════════════
-else:
+elif opcion == "Análisis Visual":
     st.markdown("""
     <div style="margin-bottom: 2rem;">
         <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis de Datos del Notebook (.ipynb)</h1>
