@@ -9,8 +9,11 @@
     <!-- SCRIPT NEÓN — Streamlit extrae solo este bloque con id="neon-streamlit" -->
     <script id="neon-streamlit">
         function aplicarEstiloNeon(colorNeon, isDark) {
+            const doc = window.parent && window.parent.document ? window.parent.document : document;
             const bgColor = isDark ? 'rgba(14, 17, 23, 0.85)' : 'rgba(255, 255, 255, 0.95)';
-            const tarjetas = document.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
+            const txtColor = isDark ? '#FFFFFF' : '#2D3E50';
+            const tarjetas = doc.querySelectorAll('div[data-testid="stVerticalBlockBorderWrapper"]');
+            
             tarjetas.forEach(tarjeta => {
                 tarjeta.style.setProperty('background-color', bgColor, 'important');
                 tarjeta.style.setProperty('border', 'none', 'important');
@@ -18,17 +21,26 @@
                 tarjeta.style.setProperty('border-radius', '8px', 'important');
                 tarjeta.style.setProperty('box-shadow', `0px 8px 20px -6px ${colorNeon}`, 'important');
                 tarjeta.style.setProperty('margin-bottom', '15px', 'important');
+                
+                // Forzar el color del texto DENTRO de cada tarjeta
+                const textos = tarjeta.querySelectorAll('h1, h2, h3, p, label, div[data-baseweb="select"] div');
+                textos.forEach(t => {
+                    t.style.setProperty('color', txtColor, 'important');
+                });
             });
         }
         const colorActivo = "COLOR_PLACEHOLDER";
         const isDarkTheme = "THEME_PLACEHOLDER" === "true";
+        
         setTimeout(() => {
             if (colorActivo !== "COLOR_PLACEHOLDER") aplicarEstiloNeon(colorActivo, isDarkTheme);
         }, 500);
+        
+        const docToObserve = window.parent && window.parent.document ? window.parent.document : document;
         const observer = new MutationObserver(() => {
             if (colorActivo !== "COLOR_PLACEHOLDER") aplicarEstiloNeon(colorActivo, isDarkTheme);
         });
-        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(docToObserve.body, { childList: true, subtree: true });
     </script>
 
     <style>
