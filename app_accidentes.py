@@ -744,8 +744,11 @@ else:
     
     # Aquí inyectamos el HTML que lee el archivo de las gráficas
     import streamlit.components.v1 as components
-    if os.path.exists("neon_script.html"):
-        with open("neon_script.html", "r", encoding="utf-8") as f:
+    import os
+    
+    neon_html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "neon_script.html")
+    if os.path.exists(neon_html_path):
+        with open(neon_html_path, "r", encoding="utf-8") as f:
             html_content = f.read()
         components.html(html_content, height=1200, scrolling=True)
     else:
