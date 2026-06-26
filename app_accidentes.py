@@ -282,48 +282,51 @@ st.markdown(f"""
         letter-spacing: 0.05em;
     }}
 
-    /* Estilo e iluminación de la Captura 145658 aplicado solo al resumen */
+    /* Contenedor principal de cada tarjeta del resumen */
     .tarjeta-resumen {{
-        background-color: var(--secondary-background-color) !important; /* Se aclara u oscurece solo */
+        background-color: var(--secondary-background-color) !important; /* El fondo sí se adapta solo */
         border: 1px solid rgba(0, 210, 255, 0.15) !important;
-        border-bottom: 4px solid #00D2FF !important; /* Mantiene su línea azul neón fija */
+        border-bottom: 4px solid #00D2FF !important; /* Línea azul neón sutil fija */
         border-radius: 12px !important;
-        
-        /* NEÓN SUAVIZADO: Bajamos la opacidad a 0.25 para que sea un reflejo sutil y elegante */
-        box-shadow: 0px 6px 15px -8px rgba(0, 210, 255, 0.25) !important; 
-        
+        box-shadow: 0px 6px 15px -8px rgba(0, 210, 255, 0.25) !important; /* Brillo fino elegante */
         padding: 20px !important;
         margin-bottom: 15px !important;
         text-align: left;
-        transition: background-color 0.3s ease;
     }}
     
-    /* Colores de texto adaptativos para que NUNCA se vuelvan invisibles */
+    /* 1. COLOR FIJO PARA EL TÍTULO (Gris Plomo Elegante - No cambia) */
     .tarjeta-resumen h4 {{
-        color: var(--text-color) !important;
-        opacity: 0.7; /* Título secundario un poco más suave */
+        color: #64748B !important; 
         font-size: 13px !important;
         text-transform: uppercase;
         letter-spacing: 1px;
         margin-bottom: 5px !important;
         margin-top: 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 6px;
     }}
+    
+    /* 2. COLOR FIJO PARA EL DATO PRINCIPAL / SUBTÍTULO (Blanco Puro - No cambia) */
     .tarjeta-resumen h2 {{
-        color: var(--text-color) !important; /* Forzar el color de texto principal del sistema */
+        color: #FFFFFF !important; 
         font-size: 28px !important;
         font-weight: bold !important;
         margin: 0 !important;
     }}
+    
+    /* Texto descriptivo inferior (Azul Cyan de la marca - No cambia) */
     .tarjeta-resumen p {{
-        color: #00D2FF !important; /* Subtexto mantiene el azul de la identidad */
+        color: #00D2FF !important; 
         font-size: 12px !important;
         margin-top: 5px !important;
         margin-bottom: 0 !important;
     }}
-
-    /* SOLUCIÓN LETRA INVISIBLE DEL RIESGO: Forzar que el subtexto del riesgo herede el color del tema */
-    .tarjeta-resumen-riesgo, [data-testid="stVerticalBlock"] p {{
-        color: var(--text-color) !important;
+    
+    /* Garantizar que el emoji mantenga su color nativo original */
+    .tarjeta-resumen span.emoji {{
+        color: initial !important;
+        font-style: normal !important;
     }}
 
     /* Reemplazar el botón del slider de Streamlit por el emoji 📍 */
@@ -479,7 +482,7 @@ if "Inicio" in pagina:
     with col1:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4>🚨 Total Accidentes</h4>
+                <h4><span class='emoji'>🚨</span> Total Accidentes</h4>
                 <h2>{kpi_incidentes}</h2>
                 <p>Registros acumulados</p>
             </div>
@@ -488,7 +491,7 @@ if "Inicio" in pagina:
     with col2:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4>🎂 Edad Promedio</h4>
+                <h4><span class='emoji'>🎂</span> Edad Promedio</h4>
                 <h2>{kpi_edad} años</h2>
                 <p>Datos de involucrados</p>
             </div>
@@ -497,7 +500,7 @@ if "Inicio" in pagina:
     with col3:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4>📍 Municipio Crítico</h4>
+                <h4><span class='emoji'>📍</span> Municipio Crítico</h4>
                 <h2>{kpi_mun}</h2>
                 <p>Mayor frecuencia</p>
             </div>
@@ -506,7 +509,7 @@ if "Inicio" in pagina:
     with col4:
         st.markdown(f"""
             <div class='tarjeta-resumen'>
-                <h4>👤 Actor Vulnerable</h4>
+                <h4><span class='emoji'>👤</span> Actor Vulnerable</h4>
                 <h2>{kpi_actor}</h2>
                 <p>Más involucrado</p>
             </div>
