@@ -732,6 +732,11 @@ elif opcion == "Análisis Visual":
     </div>
     """, unsafe_allow_html=True)
     
+    # Renderizar el HTML guardado en el repositorio
+    if os.path.exists("neon_script.html"):
+        with open("neon_script.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+        components.html(html_content, height=900, scrolling=True)
     # FILA 1
     c1, c2 = st.columns(2, gap="large")
     with c1:
