@@ -553,45 +553,18 @@ if opcion == "Inicio - Predictor":
         with st.container(border=True):
             st.markdown('<div class="block-title">⚙️ Parámetros del Escenario</div>', unsafe_allow_html=True)
             edad = st.slider("Edad del actor vial", 0, 100, 30)
-            css_slider_pin = """
+            # CSS exclusivo para el slider en el backend de Python
+            py_slider_style = """
 <style>
-    /* Ocultar el thumb nativo del slider completamente */
+    /* Asegurar que el contenedor del slider nativo responda */
     div[data-testid="stSlider"] [role="slider"] {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        width: 2px !important;
-        height: 2px !important;
-        opacity: 0 !important;
-    }
-    div[data-testid="stSlider"] [role="slider"]::before {
-        content: "📍" !important;
-        font-size: 24px !important;
-        display: block;
-        position: absolute;
-        top: -18px;
-        left: -11px;
-        opacity: 1 !important;
-        filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.45));
-        z-index: 10;
-        pointer-events: none;
-    }
-    /* Ocultar el thumb circular de webkit y moz */
-    div[data-testid="stSlider"] input[type="range"]::-webkit-slider-thumb {
-        -webkit-appearance: none !important;
-        appearance: none !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-    div[data-testid="stSlider"] input[type="range"]::-moz-range-thumb {
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
+        background: #00D2FF !important;
+        border: 2px solid #FFFFFF !important;
+        box-shadow: 0 0 8px rgba(0, 210, 255, 0.6) !important;
     }
 </style>
 """
-            st.markdown(css_slider_pin, unsafe_allow_html=True)
+            st.markdown(py_slider_style, unsafe_allow_html=True)
             
             def limpiar_opciones(col_name):
                 opciones = sorted(df_full[col_name].dropna().unique())
@@ -745,7 +718,7 @@ if opcion == "Inicio - Predictor":
 elif opcion == "Análisis Visual":
     st.markdown("""
     <div style="margin-bottom: 2rem;">
-        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis de Datos del Notebook (.ipynb)</h1>
+        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis Visual de los Datos</h1>
         <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración detallada de la accidentalidad vial</p>
     </div>
     """, unsafe_allow_html=True)
@@ -896,4 +869,4 @@ elif opcion == "Análisis Visual":
                 else:
                     st.info("Imagen del árbol no encontrada (arbol_random_forest.png)")
             except Exception:
-                pass
+                pass
