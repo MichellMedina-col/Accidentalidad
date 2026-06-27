@@ -556,24 +556,20 @@ if opcion == "Inicio - Predictor":
             # CSS exclusivo para el slider en el backend de Python
             py_slider_style = """
 <style>
-    /* Asegurar que el contenedor del slider nativo responda */
+    /* Ocultar el thumb nativo del slider pero permitir que el emoji responda */
     div[data-testid="stSlider"] [role="slider"] {
-        background: #00D2FF !important;
-        border: 2px solid #FFFFFF !important;
-        box-shadow: 0 0 8px rgba(0, 210, 255, 0.6) !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
     }
     
     div[data-testid="stSlider"] [role="slider"]::before {
         content: "📍" !important;
-        font-size: 24px !important;
+        font-size: 22px !important;
         display: block;
         position: absolute;
-        top: -18px;
-        left: -11px;
-        opacity: 1 !important;
-        filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.45));
-        z-index: 10;
-        pointer-events: none;
+        top: -12px;
+        left: -6px;
     }
 </style>
 """
