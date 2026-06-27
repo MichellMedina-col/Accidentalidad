@@ -562,6 +562,19 @@ if opcion == "Inicio - Predictor":
         border: 2px solid #FFFFFF !important;
         box-shadow: 0 0 8px rgba(0, 210, 255, 0.6) !important;
     }
+    
+    div[data-testid="stSlider"] [role="slider"]::before {
+        content: "📍" !important;
+        font-size: 24px !important;
+        display: block;
+        position: absolute;
+        top: -18px;
+        left: -11px;
+        opacity: 1 !important;
+        filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.45));
+        z-index: 10;
+        pointer-events: none;
+    }
 </style>
 """
             st.markdown(py_slider_style, unsafe_allow_html=True)
