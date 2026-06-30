@@ -494,7 +494,7 @@ with st.sidebar:
 
     opcion = st.radio(
         "Navegación",
-        ["Inicio - Predictor", "Análisis Visual"]
+        ["Inicio - Predictor", "Análisis Visual", "Reporte HTML"]
     )
 
     # Espacio flexible y Burbuja inferior SENA (ajustado para dar espacio al QR)
@@ -764,14 +764,186 @@ if opcion == "Inicio - Predictor":
         """, unsafe_allow_html=True)
 
 elif opcion == "Análisis Visual":
-    # Cargar y mostrar el archivo HTML completo con todas las gráficas
-    nombre_archivo_html = "analisis_accidentalidad.html"
+    st.markdown("""
+    <div style="margin-bottom: 2rem; margin-top: 4rem;">
+        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis Visual de los Datos - VialAnalytics</h1>
+        <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración detallada de la accidentalidad vial</p>
+    </div>
+    """, unsafe_allow_html=True)
+    # FILA 1
+    c1, c2 = st.columns(2, gap="large")
+    with c1:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">🎂 Distribución de Edades</div>', unsafe_allow_html=True)
+            fig_edades = px.histogram(df_full, x=COL_EDAD, nbins=20, 
+                                color_discrete_sequence=['#38BDF8'])
+            fig_edades = plotly_layout(fig_edades)
+            fig_edades.update_layout(showlegend=False, xaxis_title="Edad", yaxis_title="Frecuencia", bargap=0.05)
+            st.plotly_chart(fig_edades, use_container_width=True, config={'displayModeBar': False})
 
+    with c2:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">🚗 Tipo de Actor Vial</div>', unsafe_allow_html=True)
+            if COL_ACTOR:
+                acc_act = df_full[COL_ACTOR].value_counts().reset_index()
+                acc_act.columns = ['Actor Vial', 'Cantidad']
+                fig_actor = px.bar(acc_act, x='Cantidad', y='Actor Vial', orientation='h',
+                                   color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
+                fig_actor = plotly_layout(fig_actor)
+                fig_actor.update_layout(showlegend=False, xaxis_title="Cantidad", yaxis_title="")
+                st.plotly_chart(fig_actor, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columna Actor Vial no disponible.")
+
+    # FILA 2
+    c3, c4 = st.columns(2, gap="large")
+    with c3:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">🏘️ Accidentes por Municipio</div>', unsafe_allow_html=True)
+            if COL_MUN:
+                acc_mun = df_full.groupby(COL_MUN)[COL_CANT].sum().sort_values(ascending=False).reset_index() if COL_CANT else df_full[COL_MUN].value_counts().reset_index()
+                acc_mun.columns = [COL_MUN, 'Cantidad']
+                fig_mun = px.bar(acc_mun, x=COL_MUN, y='Cantidad', 
+                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
+                fig_mun = plotly_layout(fig_mun)
+                fig_mun.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
+                st.plotly_chart(fig_mun, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columna Municipio no disponible.")
+
+    with c4:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">📅 Accidentes por Mes</div>', unsafe_allow_html=True)
+            if 'fecha_hecho' in df_full.columns:
+                df_mes = df_full.copy()
+                df_mes['Mes'] = df_mes['fecha_hecho'].dt.month
+                acc_mes = df_mes.groupby('Mes')[COL_CANT].sum().reset_index() if COL_CANT else df_mes['Mes'].value_counts().reset_index()
+                acc_mes.columns = ['Mes', 'Cantidad']
+                meses_nombres = {1:'Ene', 2:'Feb', 3:'Mar', 4:'Abr', 5:'May', 6:'Jun', 
+                                 7:'Jul', 8:'Ago', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dic'}
+                acc_mes['Nombre_Mes'] = acc_mes['Mes'].map(meses_nombres)
+                fig_mes = px.bar(acc_mes, x='Nombre_Mes', y='Cantidad', 
+                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
+                fig_mes = plotly_layout(fig_mes)
+                fig_mes.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
+                st.plotly_chart(fig_mes, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columna fecha_hecho no disponible.")
+
+    # FILA 3
+    c5, c6 = st.columns(2, gap="large")
+    with c5:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">⚡ Distribución de Tipos de Evento</div>', unsafe_allow_html=True)
+            if COL_EVENTO:
+                acc_ev = df_full[COL_EVENTO].value_counts().reset_index()
+                acc_ev.columns = ['Tipo Evento', 'Cantidad']
+                fig_evento = px.bar(acc_ev, x='Tipo Evento', y='Cantidad', 
+                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
+                fig_evento = plotly_layout(fig_evento)
+                fig_evento.update_layout(showlegend=False, xaxis_title="", yaxis_title="")
+                st.plotly_chart(fig_evento, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columna Tipo Evento no disponible.")
+
+    with c6:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">👥 Género vs Tipo de Evento</div>', unsafe_allow_html=True)
+            if COL_GENERO and COL_EVENTO:
+                fig_genero = px.histogram(df_full, x=COL_GENERO, color=COL_EVENTO, barmode='group',
+                                    color_discrete_sequence=px.colors.qualitative.Set2)
+                fig_genero = plotly_layout(fig_genero)
+                fig_genero.update_layout(xaxis_title="Género", yaxis_title="Cantidad")
+                st.plotly_chart(fig_genero, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columnas Género/Evento no disponibles.")
+
+    # FILA 4
+    c7, c8 = st.columns(2, gap="large")
+    with c7:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">🔥 Mapa de Calor (Municipio vs Evento)</div>', unsafe_allow_html=True)
+            if COL_MUN and COL_EVENTO:
+                tabla = df_full.pivot_table(values=COL_CANT if COL_CANT else df_full.columns[0], index=COL_MUN, columns=COL_EVENTO, aggfunc='count' if not COL_CANT else 'sum', fill_value=0)
+                fig_heatmap = px.imshow(tabla, text_auto=True, aspect="auto", color_continuous_scale='Blues')
+                fig_heatmap = plotly_layout(fig_heatmap)
+                fig_heatmap.update_layout(xaxis_title="", yaxis_title="")
+                st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columnas Municipio/Evento no disponibles.")
+
+    with c8:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">📈 Distribución de Edad por Evento</div>', unsafe_allow_html=True)
+            if COL_EVENTO and COL_EDAD:
+                fig_box = px.box(df_full, x=COL_EVENTO, y=COL_EDAD, color=COL_EVENTO, 
+                              color_discrete_sequence=px.colors.qualitative.Pastel)
+                fig_box = plotly_layout(fig_box)
+                fig_box.update_layout(showlegend=False, xaxis_title="", yaxis_title="Edad")
+                st.plotly_chart(fig_box, use_container_width=True, config={'displayModeBar': False})
+            else:
+                st.info("Columnas Evento/Edad no disponibles.")
+
+    # FILA 5
+    c9, c10 = st.columns(2, gap="large")
+    with c9:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">💡 Importancia de Variables (Modelo)</div>', unsafe_allow_html=True)
+            if modelo is not None:
+                try:
+                    cols_mod = list(modelo.feature_names_in_)
+                    display_cols = [c.split('_')[0] for c in cols_mod]
+                    importances = modelo.feature_importances_
+                    imp_df = pd.DataFrame({'Variable': display_cols, 'Importancia': importances})
+                    imp_grouped = imp_df.groupby('Variable')['Importancia'].sum().sort_values()
+                    
+                    fig_importancia = px.bar(x=imp_grouped.values, y=imp_grouped.index, orientation='h',
+                                  color=imp_grouped.values, color_continuous_scale=['#38BDF8', '#F59E0B'])
+                    fig_importancia = plotly_layout(fig_importancia)
+                    fig_importancia.update_layout(showlegend=False, xaxis_title="Importancia", yaxis_title="")
+                    st.plotly_chart(fig_importancia, use_container_width=True, config={'displayModeBar': False})
+                except Exception as e:
+                    st.info(f"Importancia de variables no disponible: {e}")
+            else:
+                st.info("Modelo no disponible.")
+
+    with c10:
+        with st.container(border=True):
+            st.markdown('<div class="block-title">🌲 Estructura del Árbol de Decisión (Random Forest)</div>', unsafe_allow_html=True)
+            try:
+                if os.path.exists("arbol_random_forest.png"):
+                    st.image("arbol_random_forest.png", use_container_width=True)
+                else:
+                    st.info("Imagen del árbol no encontrada (arbol_random_forest.png)")
+            except Exception:
+                pass
+
+    st.markdown("""
+    <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+        <button onclick="window.print()" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            📥 Descargar Análisis en PDF
+        </button>
+        <p style="font-size: 12px; color: gray; margin-top: 8px;">Guarda las gráficas y la predicción actual generada.</p>
+    </div>
+    """, unsafe_allow_html=True)
+
+elif opcion == "Reporte HTML":
+    st.markdown("""
+    <style>
+        .block-container {
+            max-width: 100% !important;
+            padding-top: 1rem !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            padding-bottom: 0 !important;
+        }
+    </style>
+    """, unsafe_allow_html=True)
+    
+    nombre_archivo_html = "analisis_accidentalidad.html"
     if os.path.exists(nombre_archivo_html):
         with open(nombre_archivo_html, "r", encoding="utf-8") as f:
             html_contenido = f.read()
-
-        # Embeber el HTML completo con scrollbar y altura adaptable
-        components.html(html_contenido, height=1000, scrolling=True)
+        components.html(html_contenido, height=1200, scrolling=True)
     else:
-        st.error(f"⚠️ No se encontró el archivo {nombre_archivo_html} en el repositorio.")
+        st.error(f"⚠️ No se encontró el archivo {nombre_archivo_html}")
