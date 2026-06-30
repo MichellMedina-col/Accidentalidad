@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VialAnalytics - Predicción de Riesgo</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">
+            <div class="icon">🚦</div>
+            <div class="brand">
+                <h2>VialAnalytics</h2>
+                <p>SABANA OCCIDENTE</p>
+            </div>
+        </div>
+        <div class="nav">
+            <div class="nav-item active">🏠 Inicio - Predictor</div>
+            <div class="nav-item">📊 Análisis Visual</div>
+        </div>
+        <div class="sena-bubble">
+            <div class="sena-icon">📘</div>
+            <div class="sena-title">Proyecto SENA 2026</div>
+            <div class="sena-subtitle">Análisis de Accidentalidad Vial</div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="banner">
+            <h1>Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</h1>
+            <p>🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
+        </div>
+
+        <div class="card kpi-card">
+            <h3>Resumen Estadístico Global</h3>
+            <div class="kpi-grid" id="kpi-container">
+                <div class="kpi-item">
+                    <div class="kpi-label">Total Accidentes</div>
+                    <div class="kpi-value" id="kpi_incidentes">...</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Edad Promedio</div>
+                    <div class="kpi-value" id="kpi_edad">...</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Municipio Crítico</div>
+                    <div class="kpi-value kpi-small" id="kpi_mun">...</div>
+                </div>
+                <div class="kpi-item">
+                    <div class="kpi-label">Actor Vulnerable</div>
+                    <div class="kpi-value kpi-small" id="kpi_actor">...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card form-card">
+                <h3>⚙️ Parámetros del Escenario</h3>
+                
+                <div class="form-group">
+                    <label>Edad del actor vial: <span id="edad-val">30</span></label>
+                    <input type="range" id="edad" min="0" max="100" value="30">
+                </div>
+
+                <div class="form-group">
+                    <label>Municipio</label>
+                    <select id="municipio">
+                        <option value="Facatativá">Facatativá</option>
+                        <option value="Funza">Funza</option>
+                        <option value="Madrid">Madrid</option>
+                        <option value="Mosquera">Mosquera</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Zona del incidente</label>
+                    <select id="zona">
+                        <option value="Urbana">Urbana</option>
+                        <option value="Rural">Rural</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Género</label>
+                    <select id="genero">
+                        <option value="Masculino">Masculino</option>
+                        <option value="Femenino">Femenino</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Tipo de actor vial</label>
+                    <select id="actor">
+                        <option value="Motociclista">Motociclista</option>
+                        <option value="Peatón">Peatón</option>
+                        <option value="Ciclista">Ciclista</option>
+                        <option value="Conductor Vehículo">Conductor Vehículo</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="card result-card" id="result-container">
+                <h3>🔮 Predicción de Riesgo</h3>
+                <div class="gauge-container">
+                    <svg viewBox="0 0 220 200" class="gauge-svg">
+                        <filter id="glow">
+                            <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                            <feMerge>
+                                <feMergeNode in="coloredBlur"/>
+                                <feMergeNode in="SourceGraphic"/>
+                            </feMerge>
+                        </filter>
+                        <!-- Pista gris -->
+                        <circle cx="110" cy="100" r="80" stroke="rgba(255,255,255,0.1)" stroke-width="12" fill="transparent" stroke-dasharray="335 168" stroke-linecap="round" class="gauge-track"/>
+                        <!-- Barra activa -->
+                        <circle cx="110" cy="100" r="80" stroke="#00D2FF" stroke-width="14" fill="transparent" stroke-dasharray="0 503" stroke-linecap="round" class="gauge-bar" id="gauge-bar" filter="url(#glow)"/>
+                    </svg>
+                    <div class="pin" id="pin">📍</div>
+                    <div class="gauge-value" id="riesgo_val">0%</div>
+                </div>
+                <div class="status-box" id="status-box">
+                    <div class="status-label" id="status-label">ESPERANDO DATOS...</div>
+                    <div class="status-desc">Índice de riesgo estimado para el escenario</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="app.js"></script>
+</body>
+</html>

@@ -74,11 +74,11 @@ if tema_actual == "Modo Claro":
     :root {
         --bg-color: #F4F4F0;
         --sidebar-bg: #ffffff;
-        --sidebar-text: #002855;
+        --sidebar-text: #052C58;
         --card-bg: #ffffff;
         --card-border: #E2E8F0;
-        --text-color: #002855;
-        --title-color: #4A703C;
+        --text-color: #052C58;
+        --title-color: #4E7340;
         --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
         --glow-bajo-shadow: 0px 4px 15px rgba(74, 222, 128, 0.3);
         --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.4);
@@ -112,11 +112,11 @@ else:
     :root {
         --bg-color: #F4F4F0;
         --sidebar-bg: #ffffff;
-        --sidebar-text: #002855;
+        --sidebar-text: #052C58;
         --card-bg: #ffffff;
         --card-border: #E2E8F0;
-        --text-color: #002855;
-        --title-color: #4A703C;
+        --text-color: #052C58;
+        --title-color: #4E7340;
         --card-shadow: 0px 4px 10px rgba(0,0,0,0.05);
         --glow-bajo-shadow: 0px 4px 15px rgba(74, 222, 128, 0.3);
         --glow-bajo-border: 1px solid rgba(74, 222, 128, 0.4);
@@ -365,6 +365,39 @@ st.markdown(f"""
     ::-webkit-scrollbar {{ width: 6px; height: 6px; }}
     ::-webkit-scrollbar-track {{ background: transparent; }}
     ::-webkit-scrollbar-thumb {{ background: rgba(150,150,150,0.3); border-radius: 3px; }}
+    /* Responsive Slider Pin */
+    div[data-testid="stSlider"] [role="slider"] {{
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+    }}
+    div[data-testid="stSlider"] [role="slider"]::before {{
+        content: "📍" !important;
+        font-size: 22px !important; /* PC size */
+        top: -12px;
+        left: -6px;
+        filter: drop-shadow(0px 4px 3px rgba(0, 210, 255, 0.5));
+    }}
+    @media (max-width: 768px) {{
+        div[data-testid="stSlider"] [role="slider"]::before {{
+            font-size: 26px !important; /* larger for touch */
+            top: -16px;
+            left: -8px;
+            filter: drop-shadow(0px 5px 5px rgba(0, 210, 255, 0.6));
+        }}
+    }}
+    
+    @media print {{
+        * {{
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }}
+        body, html, .stApp, section[data-testid="stMain"] {{ height: auto !important; overflow: visible !important; position: relative !important; }}
+        [data-testid="stSidebar"], header, footer, button {{ display: none !important; }}
+        div[class^="stMainBlockContainer"] {{ overflow: visible !important; height: auto !important; }}
+        .js-plotly-plot, .tarjeta-resumen {{ page-break-inside: avoid !important; }}
+    }}
 </style>
 """, unsafe_allow_html=True)
 
@@ -473,9 +506,9 @@ with st.sidebar:
     # Logo oficial del SENA
     st.markdown("""
     <div style="display: flex; justify-content: center; margin-bottom: 8px;">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg" 
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg?v=verde" 
              alt="Logo SENA" width="90" 
-             style="filter: drop-shadow(0 2px 4px rgba(0,0,0,0.15)); transition: transform 0.3s ease;"
+             style="filter: brightness(0) saturate(100%) invert(44%) sepia(63%) saturate(1376%) hue-rotate(58deg) brightness(98%) contrast(100%) drop-shadow(0 2px 4px rgba(0,0,0,0.15)); transition: transform 0.3s ease;"
              onmouseover="this.style.transform='scale(1.08)'" 
              onmouseout="this.style.transform='scale(1)'">
     </div>
@@ -496,8 +529,8 @@ if opcion == "Inicio - Predictor":
     # ── BANNER PRINCIPAL ───────────────────────────────────────
     st.markdown(f"""
     <div class="banner-container">
-        <h1 class="banner-title" style="color: #ffffff !important; font-size: 2.5rem !important; font-weight: 800 !important; margin-bottom: 1rem !important; text-shadow: 2px 2px 8px rgba(0,0,0,0.8) !important; line-height: 1.2 !important; text-align: center !important;">Análisis de la accidentalidad vial en los municipios de Facatativá, Funza, Madrid y Mosquera durante el periodo 2021–2026.</h1>
-        <p class="banner-subtitle" style="color: #F59E0B !important; font-size: 1.3rem !important; font-weight: 700 !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.9) !important; margin: 0 !important; text-align: center !important;">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana.</p>
+        <h1 class="banner-title" style="color: #ffffff !important; font-size: 2.5rem !important; font-weight: 800 !important; margin-bottom: 0.5rem !important; text-shadow: 2px 2px 8px rgba(0,0,0,0.8) !important; line-height: 1.2 !important; text-align: center !important;">Análisis de la Accidentalidad Vial</h1>
+        <p class="banner-subtitle" style="color: #F59E0B !important; font-size: 1.3rem !important; font-weight: 700 !important; text-shadow: 1px 1px 5px rgba(0,0,0,0.9) !important; margin: 0 !important; text-align: center !important;">📍 Sabana Occidente (2021-2026) · Facatativá, Funza, Madrid y Mosquera<br><br>🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -720,167 +753,25 @@ if opcion == "Inicio - Predictor":
             else:
                 st.warning("Modelo no disponible. Por favor asegúrate de que 'modelo_accidentes.pkl' exista.")
 
+    if opcion == "Inicio - Predictor":
+        st.markdown("""
+        <div style="text-align: center; margin-top: 40px; margin-bottom: 20px;">
+            <button onclick="window.print()" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                📥 Descargar Análisis en PDF
+            </button>
+            <p style="font-size: 12px; color: gray; margin-top: 8px;">Guarda la predicción actual generada.</p>
+        </div>
+        """, unsafe_allow_html=True)
 
-# ════════════════════════════════════════════════════════════════
-#  PÁGINA ANÁLISIS VISUAL
-# ════════════════════════════════════════════════════════════════
 elif opcion == "Análisis Visual":
-    st.markdown("""
-    <div style="margin-bottom: 2rem;">
-        <h1 style="color: var(--title-color) !important; font-weight: 800; font-size: 2.2rem; margin-bottom: 0;">📈 Análisis Visual de los Datos</h1>
-        <p style="color: #64748B !important; font-size: 1.1rem; margin-top: 5px;">Exploración detallada de la accidentalidad vial</p>
-    </div>
-    """, unsafe_allow_html=True)
-    
-    # Renderizar el HTML guardado en el repositorio
-    if os.path.exists("neon_script.html"):
-        with open("neon_script.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
-        components.html(html_content, height=900, scrolling=True)
-    # FILA 1
-    c1, c2 = st.columns(2, gap="large")
-    with c1:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">🎂 Distribución de Edades</div>', unsafe_allow_html=True)
-            fig_edades = px.histogram(df_full, x=COL_EDAD, nbins=20, 
-                                color_discrete_sequence=['#38BDF8'])
-            fig_edades = plotly_layout(fig_edades)
-            fig_edades.update_layout(showlegend=False, xaxis_title="Edad", yaxis_title="Frecuencia", bargap=0.05)
-            st.plotly_chart(fig_edades, use_container_width=True, config={'displayModeBar': False})
+    # Cargar y mostrar el archivo HTML completo con todas las gráficas
+    nombre_archivo_html = "analisis_accidentalidad.html"
 
-    with c2:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">🚗 Tipo de Actor Vial</div>', unsafe_allow_html=True)
-            if COL_ACTOR:
-                acc_act = df_full[COL_ACTOR].value_counts().reset_index()
-                acc_act.columns = ['Actor Vial', 'Cantidad']
-                fig_actor = px.bar(acc_act, x='Cantidad', y='Actor Vial', orientation='h',
-                                   color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig_actor = plotly_layout(fig_actor)
-                fig_actor.update_layout(showlegend=False, xaxis_title="Cantidad", yaxis_title="")
-                st.plotly_chart(fig_actor, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columna Actor Vial no disponible.")
+    if os.path.exists(nombre_archivo_html):
+        with open(nombre_archivo_html, "r", encoding="utf-8") as f:
+            html_contenido = f.read()
 
-    # FILA 2
-    c3, c4 = st.columns(2, gap="large")
-    with c3:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">🏘️ Accidentes por Municipio</div>', unsafe_allow_html=True)
-            if COL_MUN:
-                acc_mun = df_full.groupby(COL_MUN)[COL_CANT].sum().sort_values(ascending=False).reset_index() if COL_CANT else df_full[COL_MUN].value_counts().reset_index()
-                acc_mun.columns = [COL_MUN, 'Cantidad']
-                fig_mun = px.bar(acc_mun, x=COL_MUN, y='Cantidad', 
-                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig_mun = plotly_layout(fig_mun)
-                fig_mun.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
-                st.plotly_chart(fig_mun, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columna Municipio no disponible.")
-
-    with c4:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">📅 Accidentes por Mes</div>', unsafe_allow_html=True)
-            if 'fecha_hecho' in df_full.columns:
-                df_mes = df_full.copy()
-                df_mes['Mes'] = df_mes['fecha_hecho'].dt.month
-                acc_mes = df_mes.groupby('Mes')[COL_CANT].sum().reset_index() if COL_CANT else df_mes['Mes'].value_counts().reset_index()
-                acc_mes.columns = ['Mes', 'Cantidad']
-                meses_nombres = {1:'Ene', 2:'Feb', 3:'Mar', 4:'Abr', 5:'May', 6:'Jun', 
-                                 7:'Jul', 8:'Ago', 9:'Sep', 10:'Oct', 11:'Nov', 12:'Dic'}
-                acc_mes['Nombre_Mes'] = acc_mes['Mes'].map(meses_nombres)
-                fig_mes = px.bar(acc_mes, x='Nombre_Mes', y='Cantidad', 
-                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig_mes = plotly_layout(fig_mes)
-                fig_mes.update_layout(showlegend=False, xaxis_title="", yaxis_title="Cantidad")
-                st.plotly_chart(fig_mes, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columna fecha_hecho no disponible.")
-
-    # FILA 3
-    c5, c6 = st.columns(2, gap="large")
-    with c5:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">⚡ Distribución de Tipos de Evento</div>', unsafe_allow_html=True)
-            if COL_EVENTO:
-                acc_ev = df_full[COL_EVENTO].value_counts().reset_index()
-                acc_ev.columns = ['Tipo Evento', 'Cantidad']
-                fig_evento = px.bar(acc_ev, x='Tipo Evento', y='Cantidad', 
-                              color='Cantidad', color_continuous_scale=['#38BDF8', '#F59E0B'])
-                fig_evento = plotly_layout(fig_evento)
-                fig_evento.update_layout(showlegend=False, xaxis_title="", yaxis_title="")
-                st.plotly_chart(fig_evento, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columna Tipo Evento no disponible.")
-
-    with c6:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">👥 Género vs Tipo de Evento</div>', unsafe_allow_html=True)
-            if COL_GENERO and COL_EVENTO:
-                fig_genero = px.histogram(df_full, x=COL_GENERO, color=COL_EVENTO, barmode='group',
-                                    color_discrete_sequence=px.colors.qualitative.Set2)
-                fig_genero = plotly_layout(fig_genero)
-                fig_genero.update_layout(xaxis_title="Género", yaxis_title="Cantidad")
-                st.plotly_chart(fig_genero, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columnas Género/Evento no disponibles.")
-
-    # FILA 4
-    c7, c8 = st.columns(2, gap="large")
-    with c7:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">🔥 Mapa de Calor (Municipio vs Evento)</div>', unsafe_allow_html=True)
-            if COL_MUN and COL_EVENTO:
-                tabla = df_full.pivot_table(values=COL_CANT if COL_CANT else df_full.columns[0], index=COL_MUN, columns=COL_EVENTO, aggfunc='count' if not COL_CANT else 'sum', fill_value=0)
-                fig_heatmap = px.imshow(tabla, text_auto=True, aspect="auto", color_continuous_scale='Blues')
-                fig_heatmap = plotly_layout(fig_heatmap)
-                fig_heatmap.update_layout(xaxis_title="", yaxis_title="")
-                st.plotly_chart(fig_heatmap, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columnas Municipio/Evento no disponibles.")
-
-    with c8:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">📈 Distribución de Edad por Evento</div>', unsafe_allow_html=True)
-            if COL_EVENTO and COL_EDAD:
-                fig_box = px.box(df_full, x=COL_EVENTO, y=COL_EDAD, color=COL_EVENTO, 
-                              color_discrete_sequence=px.colors.qualitative.Pastel)
-                fig_box = plotly_layout(fig_box)
-                fig_box.update_layout(showlegend=False, xaxis_title="", yaxis_title="Edad")
-                st.plotly_chart(fig_box, use_container_width=True, config={'displayModeBar': False})
-            else:
-                st.info("Columnas Evento/Edad no disponibles.")
-
-    # FILA 5
-    c9, c10 = st.columns(2, gap="large")
-    with c9:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">💡 Importancia de Variables (Modelo)</div>', unsafe_allow_html=True)
-            if modelo is not None:
-                try:
-                    cols_mod = list(modelo.feature_names_in_)
-                    display_cols = [c.split('_')[0] for c in cols_mod]
-                    importances = modelo.feature_importances_
-                    imp_df = pd.DataFrame({'Variable': display_cols, 'Importancia': importances})
-                    imp_grouped = imp_df.groupby('Variable')['Importancia'].sum().sort_values()
-                    
-                    fig_importancia = px.bar(x=imp_grouped.values, y=imp_grouped.index, orientation='h',
-                                  color=imp_grouped.values, color_continuous_scale=['#38BDF8', '#F59E0B'])
-                    fig_importancia = plotly_layout(fig_importancia)
-                    fig_importancia.update_layout(showlegend=False, xaxis_title="Importancia", yaxis_title="")
-                    st.plotly_chart(fig_importancia, use_container_width=True, config={'displayModeBar': False})
-                except Exception as e:
-                    st.info(f"Importancia de variables no disponible: {e}")
-            else:
-                st.info("Modelo no disponible.")
-
-    with c10:
-        with st.container(border=True):
-            st.markdown('<div class="block-title">🌲 Estructura del Árbol de Decisión (Random Forest)</div>', unsafe_allow_html=True)
-            try:
-                if os.path.exists("arbol_random_forest.png"):
-                    st.image("arbol_random_forest.png", use_container_width=True)
-                else:
-                    st.info("Imagen del árbol no encontrada (arbol_random_forest.png)")
-            except Exception:
-                pass
+        # Embeber el HTML completo con scrollbar y altura adaptable
+        components.html(html_contenido, height=1000, scrolling=True)
+    else:
+        st.error(f"⚠️ No se encontró el archivo {nombre_archivo_html} en el repositorio.")

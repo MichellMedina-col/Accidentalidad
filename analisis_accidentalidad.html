@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguridad Vial - Sabana Occidente</title>
+    <title>VialAnalytics - Sabana Occidente</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
 
     <!-- SCRIPT NEÓN — Streamlit lo extrae y lo inyecta solo con el id "neon-streamlit" -->
@@ -56,14 +56,14 @@
             /* Light mode colors - Pastel suave */
             --bg-primary: #F5F7FA;
             --bg-secondary: #FFFFFF;
-            --text-primary: #2D3E50;
-            --text-secondary: #7F8C8D;
+            --text-primary: #314254;
+            --text-secondary: #828E8F;
             --border-color: #E8EEF5;
-            --primary-color: #5DADE2;
-            --primary-dark: #3498DB;
-            --accent-color: #52BE80;
-            --warning-color: #F8B739;
-            --danger-color: #E74C3C;
+            --primary-color: #60AFE3;
+            --primary-dark: #389ADC;
+            --accent-color: #55BF83;
+            --warning-color: #F8B83D;
+            --danger-color: #E75040;
             --nav-bg: #FFFFFF;
             --nav-border: #E8EEF5;
             --card-shadow: rgba(93, 173, 226, 0.08);
@@ -736,6 +736,22 @@
             color: var(--text-secondary);
             opacity: 0.7;
         }
+
+        @media print {
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+                color-adjust: exact !important;
+            }
+            nav, button, .html-tab-button, .nav-separator { display: none !important; }
+            .html-tab-content {
+                display: block !important;
+                opacity: 1 !important;
+            }
+            .chart-card, .stat-card, .tarjeta-resumen { page-break-inside: avoid !important; }
+            .container { max-width: 100% !important; }
+            .hero { page-break-after: avoid !important; }
+        }
     </style>
 </head>
 
@@ -745,7 +761,7 @@
         <div class="nav-container">
             <a href="#" class="logo">
                 <div class="logo-icon">🛣️</div>
-                <span>Seguridad Vial</span>
+                <span>VialAnalytics</span>
             </a>
             <div class="nav-links">
                 <button class="html-tab-button active" onclick="switchTab(event, 'pestana-inicio')">🏠 Inicio</button>
@@ -760,10 +776,9 @@
 
     <!-- Hero Section -->
     <section class="hero">
-        <h1>Análisis de la Accidentalidad Vial</h1>
-        <p>📍 Sabana Occidente (2021-2026) · Facatativá, Funza, Madrid y Mosquera</p>
-        <p style="font-size: 0.95rem; margin-top: 0.75rem; font-style: italic;">🛣️ Conocer los riesgos hoy para
-            prevenir los accidentes de mañana</p>
+        <h1 style="color: #ffffff !important;">Análisis de la Accidentalidad Vial</h1>
+        <p style="color: #F59E0B !important; font-weight: 700;">📍 Sabana Occidente (2021-2026) · Facatativá, Funza, Madrid y Mosquera</p>
+        <p style="font-size: 0.95rem; margin-top: 0.75rem; font-style: italic; color: #F59E0B !important; font-weight: 700;">🛣️ Conocer los riesgos hoy para prevenir los accidentes de mañana</p>
     </section>
 
     <!-- Main Content -->
@@ -873,14 +888,14 @@
                     </div>
                 </div>
             </div>
-        </div><!-- Fin pestaña Inicio -->
+        </div>
 
         <!-- ============================================ -->
-        <!-- 2. PESTAÑA ANÁLISIS VISUAL: Gráficas -->
+        <!-- 2. PESTAÑA ANÁLISIS: Gráficas -->
         <!-- ============================================ -->
         <div id="pestana-analisis" class="html-tab-content">
             <!-- Charts Section -->
-            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">📈 Análisis Visual Completo</h2>
+            <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">📈 Análisis Visual Completo - VialAnalytics</h2>
             <div class="charts-grid">
                 <div class="chart-card">
                     <h3>🏘️ Accidentes por Municipio</h3><canvas id="chart-municipio"></canvas>
@@ -914,9 +929,16 @@
         </div><!-- Fin pestaña Análisis -->
     </div>
 
+    <div style="text-align: center; margin-top: 40px; margin-bottom: 40px;">
+        <button onclick="window.print()" style="background: linear-gradient(135deg, #F59E0B, #D97706); color: white; padding: 12px 24px; border: none; border-radius: 8px; font-size: 16px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4); transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+            📥 Descargar Análisis en PDF
+        </button>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">Guarda las gráficas y la predicción actual generada.</p>
+    </div>
+
     <!-- Pie de Página Institucional SENA -->
     <div class="footer-sena">
-        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg" alt="Logo SENA">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/8/83/Sena_Colombia_logo.svg?v=verde" alt="Logo SENA" style="filter: brightness(0) saturate(100%) invert(44%) sepia(63%) saturate(1376%) hue-rotate(58deg) brightness(98%) contrast(100%);">
         <h5>Proyecto SENA 2026</h5>
         <p class="footer-subtitle">Análisis de Accidentalidad Vial · Sabana Occidente - Facatativá · Funza · Madrid ·
             Mosquera (2021-2026)</p>
@@ -925,7 +947,6 @@
             María Asucena Naranjo Torres<br>
             Zuly Stefania Aguillon Pinilla<br>
             Michell Dayan Medina Arango
-            <img src="qr_code.png" alt="Código QR del repositorio" style="width:150px; margin-top:1rem; display:block;"/>
         </div>
         <p class="footer-copy">&copy; 2026 · Datos 2021-2026 | Facatativá · Funza · Madrid · Mosquera</p>
     </div>
@@ -1096,7 +1117,52 @@
         initTheme();
         updateSlider();
         updateRisk();
-        setTimeout(renderCharts, 100);
+        // Render charts in both tabs on load so PDF always works
+        function initAllCharts() {
+            // Make analisis tab temporarily visible to allow canvas to render
+            const analisisTab = document.getElementById('pestana-analisis');
+            const wasHidden = !analisisTab.classList.contains('active');
+            if (wasHidden) {
+                analisisTab.style.display = 'block';
+                analisisTab.style.position = 'absolute';
+                analisisTab.style.visibility = 'hidden';
+                analisisTab.style.pointerEvents = 'none';
+            }
+            renderCharts();
+            if (wasHidden) {
+                setTimeout(() => {
+                    analisisTab.style.display = '';
+                    analisisTab.style.position = '';
+                    analisisTab.style.visibility = '';
+                    analisisTab.style.pointerEvents = '';
+                }, 500);
+            }
+        }
+        setTimeout(initAllCharts, 100);
+
+        // Print function: shows all tabs, re-renders, then prints
+        function printAll() {
+            const tabs = document.getElementsByClassName('html-tab-content');
+            const prev = [];
+            for (let i = 0; i < tabs.length; i++) {
+                prev.push(tabs[i].classList.contains('active'));
+                tabs[i].classList.add('active');
+                tabs[i].style.display = 'block';
+            }
+            renderCharts();
+            setTimeout(() => {
+                window.print();
+                setTimeout(() => {
+                    for (let i = 0; i < tabs.length; i++) {
+                        if (!prev[i]) {
+                            tabs[i].classList.remove('active');
+                            tabs[i].style.display = '';
+                        }
+                    }
+                    renderCharts();
+                }, 1000);
+            }, 800);
+        }
 
         // ===== Tab Switching =====
         function switchTab(evt, tabId) {

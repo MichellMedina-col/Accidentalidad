@@ -1,0 +1,110 @@
+{
+  "stats": {
+    "total_records": 13076,
+    "age_mean": 32.14897522178036,
+    "municipio": {
+      "Funza": 4360,
+      "Mosquera": 3829,
+      "Madrid": 2566,
+      "Facatativá": 2321
+    },
+    "zona": {
+      "No Reportado": 10389,
+      "Urbana": 1245,
+      "Rural": 723,
+      "Sin información": 719
+    },
+    "genero": {
+      "Masculino": 5322,
+      "No Reportado": 4966,
+      "Femenino": 2788
+    },
+    "actor_vial": {
+      "No Reportado": 10389,
+      "Usuario de moto": 1071,
+      "Usuario de bicicleta": 554,
+      "Peatón": 525,
+      "Usuario de vehículo": 523,
+      "Usuario otros": 13,
+      "Sin información": 1
+    },
+    "age_distribution": [
+      {
+        "range": "0-5",
+        "casos": 1
+      },
+      {
+        "range": "5-10",
+        "casos": 10
+      },
+      {
+        "range": "10-15",
+        "casos": 88
+      },
+      {
+        "range": "15-20",
+        "casos": 253
+      },
+      {
+        "range": "20-25",
+        "casos": 400
+      },
+      {
+        "range": "25-30",
+        "casos": 421
+      },
+      {
+        "range": "30-35",
+        "casos": 10721
+      },
+      {
+        "range": "35-40",
+        "casos": 258
+      },
+      {
+        "range": "40-45",
+        "casos": 228
+      },
+      {
+        "range": "45-50",
+        "casos": 173
+      },
+      {
+        "range": "50-55",
+        "casos": 138
+      },
+      {
+        "range": "55-60",
+        "casos": 127
+      },
+      {
+        "range": "60-65",
+        "casos": 89
+      },
+      {
+        "range": "65-70",
+        "casos": 74
+      },
+      {
+        "range": "70-75",
+        "casos": 44
+      },
+      {
+        "range": "75-80",
+        "casos": 25
+      },
+      {
+        "range": "80-85",
+        "casos": 13
+      },
+      {
+        "range": "85-90",
+        "casos": 13
+      },
+      {
+        "range": "90-95",
+        "casos": 0
+      }
+    ]
+  }
+}
